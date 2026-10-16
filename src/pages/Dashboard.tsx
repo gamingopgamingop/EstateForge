@@ -1,459 +1,325 @@
-
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { useProperties } from "../contexts/PropertiesContext";
+import { useProperties, Property } from "../contexts/PropertiesContext";
 import HeaderSection from "../components/HeaderSection";
 import FooterSection from "../components/FooterSection";
 import PropertyCard from "../components/PropertyCard";
+import CompareFloatingBar from "../components/CompareFloatingBar";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-} from "recharts";
-import dashboardMetrics from "../data/dashboard-metrics.json";
-import { Loader2 } from "lucide-react";
+  Heart,
+  MessageSquare,
+  Calendar,
+  Calculator,
+  Scale,
+  Building2,
+  User,
+  ArrowRight,
+  ShieldCheck,
+  CheckCircle2,
+  Clock,
+  ExternalLink,
+  Users
+} from "lucide-react";
 
-const Dashboard: React.FC = () => {
-  const { isAuthenticated, user } = useAuth();
-  const { properties, getPropertyById, bookings, getBookingsForUser } = useProperties();
-  const [loading, setLoading] = useState(true);
+export const Dashboard: React.FC = () => {
+  const { user, switchRole, loginAsDemo } = useAuth();
+  const { properties, savedIds, enquiries, bookings, getEnquiriesForSeeker, getBookingsForUser } = useProperties();
   const navigate = useNavigate();
-  
-  // Colors for charts
-  const COLORS = ["#9b87f5", "#7E69AB", "#F97316", "#8E9196"];
-  
-  useEffect(() => {
-    // Check if user is authenticated
-    if (!isAuthenticated) {
-      navigate("/login");
-      return;
-    }
-    
-    // Simulate loading dashboard data
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1500);
-    
-    return () => clearTimeout(timer);
-  }, [isAuthenticated, navigate]);
-  
-  // Filter properties based on user role
-  const userProperties = () => {
-    if (!user) return [];
-    
-    switch (user.role) {
-      case "seller":
-        return properties.filter(p => user.listedProperties?.includes(p.id));
-      case "buyer":
-        return properties.filter(p => user.savedProperties?.includes(p.id));
-      case "admin":
-        return properties;
-      default:
-        return [];
-    }
-  };
-  
-  // Get user bookings
-  const userBookings = user ? getBookingsForUser(user.id) : [];
-  
-  // Create recent bookings with property details
-  const recentBookings = userBookings.map(booking => {
-    const property = getPropertyById(booking.propertyId);
-    return {
-      ...booking,
-      property,
-    };
-  });
-  
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-  
-  if (loading) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <HeaderSection />
-        <main className="flex-grow pt-24 flex items-center justify-center">
-          <div className="text-center">
-            <Loader2 className="h-12 w-12 text-purple animate-spin mx-auto mb-4" />
-            <h2 className="text-2xl font-semibold mb-2">Loading Your Dashboard</h2>
-            <p className="text-gray-600">Please wait while we fetch your data...</p>
-          </div>
-        </main>
-        <FooterSection />
-      </div>
-    );
-  }
-  
+
+  // If user is Owner, offer direct shortcut to Owner Workspace
+  const isOwner = user?.role === "owner";
+
+  // Saved properties
+  const savedProperties = properties.filter((p) => savedIds.includes(p.id));
+
+  // My enquiries
+  const seekerEnquiries = enquiries.filter(
+    (e) => e.seekerEmail === user?.email || String(e.seekerId) === String(user?.id) || e.seekerName === user?.name
+  );
+
+  // My scheduled visits
+  const userVisits = bookings.filter((b) => String(b.userId) === String(user?.id) || b.seekerName === user?.name);
+
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-slate-50">
       <HeaderSection />
-      
-      <main className="flex-grow pt-24 bg-gray-50">
-        <div className="container mx-auto px-4 py-12">
-          <div className="mb-8 animate-fade-in">
-            <h1 className="text-3xl font-bold mb-2">
-              Welcome back, {user?.name}
-            </h1>
-            <p className="text-gray-600">
-              {user?.role === "buyer" && "Manage your saved properties and bookings"}
-              {user?.role === "seller" && "Manage your listings and booking requests"}
-              {user?.role === "admin" && "Monitor platform activity and manage users"}
-            </p>
-          </div>
-          
-          {/* Dashboard Overview Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">
-                  {user?.role === "buyer" && "Saved Properties"}
-                  {user?.role === "seller" && "My Listings"}
-                  {user?.role === "admin" && "Total Properties"}
-                </CardTitle>
-                <CardDescription>
-                  {user?.role === "buyer" && "Properties you've saved"}
-                  {user?.role === "seller" && "Properties you've listed"}
-                  {user?.role === "admin" && "All properties on the platform"}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">
-                  {user?.role === "buyer" && user?.savedProperties?.length || 0}
-                  {user?.role === "seller" && user?.listedProperties?.length || 0}
-                  {user?.role === "admin" && dashboardMetrics.propertyMetrics.totalProperties}
+
+      <main className="flex-grow pt-24 pb-16">
+        <div className="container mx-auto px-4 max-w-6xl">
+          {/* Welcome Banner */}
+          <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200/90 shadow-sm mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <img
+                src={user?.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb"}
+                alt={user?.name || "User"}
+                className="w-16 h-16 rounded-full object-cover border-2 border-violet-500 shadow-sm"
+              />
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <h1 className="text-2xl font-bold text-slate-900">Welcome, {user?.name || "Seeker"}</h1>
+                  <Badge className="bg-violet-600 text-white text-[10px] uppercase">
+                    {user?.role || "Seeker"}
+                  </Badge>
                 </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">
-                  {user?.role === "buyer" && "My Bookings"}
-                  {user?.role === "seller" && "Booking Requests"}
-                  {user?.role === "admin" && "Total Bookings"}
-                </CardTitle>
-                <CardDescription>
-                  {user?.role === "buyer" && "Properties you've booked"}
-                  {user?.role === "seller" && "Requests for your properties"}
-                  {user?.role === "admin" && "All bookings on the platform"}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">
-                  {user?.role === "buyer" && userBookings.length}
-                  {user?.role === "seller" && user?.bookingRequests?.length || 0}
-                  {user?.role === "admin" && dashboardMetrics.bookingMetrics.totalBookings}
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">
-                  {user?.role === "buyer" && "Upcoming Viewings"}
-                  {user?.role === "seller" && "Pending Approvals"}
-                  {user?.role === "admin" && "Total Users"}
-                </CardTitle>
-                <CardDescription>
-                  {user?.role === "buyer" && "Scheduled property visits"}
-                  {user?.role === "seller" && "Bookings awaiting approval"}
-                  {user?.role === "admin" && "Registered users on the platform"}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">
-                  {user?.role === "buyer" && userBookings.filter(b => b.status === "confirmed").length}
-                  {user?.role === "seller" && user?.bookingRequests?.filter(b => b.status === "pending").length || 0}
-                  {user?.role === "admin" && dashboardMetrics.userMetrics.totalUsers}
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium">
-                  {user?.role === "buyer" && "Average Rating"}
-                  {user?.role === "seller" && "Average Listing Rating"}
-                  {user?.role === "admin" && "Revenue"}
-                </CardTitle>
-                <CardDescription>
-                  {user?.role === "buyer" && "Average rating of saved properties"}
-                  {user?.role === "seller" && "Average rating of your listings"}
-                  {user?.role === "admin" && "Total platform revenue"}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">
-                  {user?.role === "buyer" && "4.7"}
-                  {user?.role === "seller" && "4.8"}
-                  {user?.role === "admin" && `$${dashboardMetrics.financialMetrics.totalRevenue.toLocaleString()}`}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-          
-          {/* Dashboard Tabs */}
-          <Tabs defaultValue="properties" className="w-full animate-fade-in" style={{ animationDelay: '0.4s' }}>
-            <TabsList className="mb-8 grid w-full md:w-auto grid-cols-3">
-              <TabsTrigger value="properties">
-                {user?.role === "buyer" && "Saved Properties"}
-                {user?.role === "seller" && "My Listings"}
-                {user?.role === "admin" && "All Properties"}
-              </TabsTrigger>
-              <TabsTrigger value="bookings">
-                {user?.role === "buyer" && "My Bookings"}
-                {user?.role === "seller" && "Booking Requests"}
-                {user?.role === "admin" && "All Bookings"}
-              </TabsTrigger>
-              <TabsTrigger value="analytics">Analytics</TabsTrigger>
-            </TabsList>
-            
-            {/* Properties Tab */}
-            <TabsContent value="properties">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {userProperties().length > 0 ? (
-                  userProperties().map((property, index) => (
-                    <div key={property.id} className="animate-fade-in" style={{ animationDelay: `${0.1 * (index % 6)}s` }}>
-                      <PropertyCard property={property} />
-                    </div>
-                  ))
-                ) : (
-                  <div className="col-span-3 p-12 text-center bg-white rounded-xl shadow-sm">
-                    <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                    </svg>
-                    <h3 className="mt-4 text-lg font-medium text-gray-900">No properties found</h3>
-                    <p className="mt-2 text-gray-500">
-                      {user?.role === "buyer" && "You haven't saved any properties yet."}
-                      {user?.role === "seller" && "You haven't listed any properties yet."}
-                      {user?.role === "admin" && "No properties have been added to the platform."}
-                    </p>
-                    <Button className="mt-6 bg-purple hover:bg-purple-dark">
-                      {user?.role === "buyer" && "Browse Properties"}
-                      {user?.role === "seller" && "Add New Listing"}
-                      {user?.role === "admin" && "Add Property"}
-                    </Button>
-                  </div>
-                )}
+                <p className="text-xs text-slate-500">
+                  {user?.occupation || "Student & Working Professional Account"} • {user?.email}
+                </p>
               </div>
-            </TabsContent>
-            
-            {/* Bookings Tab */}
-            <TabsContent value="bookings">
-              {recentBookings.length > 0 ? (
-                <div className="space-y-6">
-                  {recentBookings.map((booking, index) => (
-                    <Card key={booking.id} className="animate-fade-in" style={{ animationDelay: `${0.1 * index}s` }}>
-                      <CardContent className="p-0">
-                        <div className="flex flex-col md:flex-row">
-                          {booking.property && (
-                            <div className="w-full md:w-1/4">
-                              <img
-                                src={booking.property.images[0]}
-                                alt={booking.property.title}
-                                className="h-48 md:h-full w-full object-cover"
-                              />
-                            </div>
-                          )}
-                          <div className="p-6 flex-grow">
-                            <div className="flex justify-between items-start mb-4">
-                              <div>
-                                <h3 className="text-xl font-bold mb-1">
-                                  {booking.property ? booking.property.title : "Property Unavailable"}
-                                </h3>
-                                <p className="text-gray-600 text-sm mb-2">
-                                  {booking.property && (
-                                    <>
-                                      {booking.property.location.address}, {booking.property.location.city},{" "}
-                                      {booking.property.location.state}
-                                    </>
-                                  )}
-                                </p>
-                              </div>
-                              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                                booking.status === "confirmed"
-                                  ? "bg-green-100 text-green-800"
-                                  : booking.status === "pending"
-                                  ? "bg-yellow-100 text-yellow-800"
-                                  : "bg-red-100 text-red-800"
-                              }`}>
-                                {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                              </span>
-                            </div>
-                            
-                            <div className="flex flex-wrap gap-6 text-sm text-gray-600">
-                              <div>
-                                <span className="font-semibold">Viewing Date:</span>{" "}
-                                {formatDate(booking.date)}
-                              </div>
-                              <div>
-                                <span className="font-semibold">Booking Created:</span>{" "}
-                                {formatDate(booking.createdAt)}
-                              </div>
-                              {booking.notes && (
-                                <div className="w-full mt-1">
-                                  <span className="font-semibold">Notes:</span> {booking.notes}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                      <CardFooter className="bg-gray-50 border-t border-gray-100 p-4 flex justify-end gap-4">
-                        {user?.role === "buyer" && (
-                          <Button variant="outline">Reschedule</Button>
-                        )}
-                        {user?.role === "seller" && booking.status === "pending" && (
-                          <>
-                            <Button variant="outline" className="border-red-500 text-red-500 hover:bg-red-50">
-                              Decline
-                            </Button>
-                            <Button className="bg-green-600 hover:bg-green-700">
-                              Approve
-                            </Button>
-                          </>
-                        )}
-                        {user?.role === "admin" && (
-                          <Button variant="outline">Manage Booking</Button>
-                        )}
-                        <Button className="bg-purple hover:bg-purple-dark">
-                          View Details
-                        </Button>
-                      </CardFooter>
-                    </Card>
-                  ))}
+            </div>
+
+            <div className="flex items-center gap-3 flex-wrap">
+              {isOwner ? (
+                <Link to="/owner/enquiries">
+                  <Button className="bg-violet-600 hover:bg-violet-700 text-white text-xs h-9">
+                    <Building2 className="w-3.5 h-3.5 mr-1.5" /> Open Owner Portal & Listings
+                  </Button>
+                </Link>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => loginAsDemo("owner")}
+                  className="text-xs h-9 text-violet-700 border-violet-200 hover:bg-violet-50"
+                >
+                  <Building2 className="w-3.5 h-3.5 mr-1.5" /> Switch to Owner View (Priya)
+                </Button>
+              )}
+
+              <Link to="/properties">
+                <Button variant="outline" size="sm" className="text-xs h-9">
+                  Browse Accommodations
+                </Button>
+              </Link>
+            </div>
+          </div>
+
+          {/* Quick Metrics Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+            <Card className="border-slate-200 shadow-sm">
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
+                  <Heart className="w-5 h-5 fill-rose-600" />
+                </div>
+                <div>
+                  <div className="text-xl font-extrabold text-slate-900">{savedProperties.length}</div>
+                  <div className="text-[11px] font-medium text-slate-500">Saved Shortlist</div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-slate-200 shadow-sm">
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-violet-100 text-violet-700 flex items-center justify-center shrink-0">
+                  <MessageSquare className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="text-xl font-extrabold text-slate-900">{seekerEnquiries.length}</div>
+                  <div className="text-[11px] font-medium text-slate-500">Sent Inquiries</div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-slate-200 shadow-sm">
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+                  <Calendar className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="text-xl font-extrabold text-slate-900">{userVisits.length}</div>
+                  <div className="text-[11px] font-medium text-slate-500">Scheduled Tours</div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-slate-200 shadow-sm">
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                  <Calculator className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="text-xl font-extrabold text-slate-900">30%</div>
+                  <div className="text-[11px] font-medium text-slate-500">Safe Rent Rule</div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Main Tabs */}
+          <Tabs defaultValue="saved" className="space-y-6">
+            <TabsList className="bg-white border border-slate-200 p-1 rounded-xl shadow-sm">
+              <TabsTrigger value="saved" className="text-xs sm:text-sm gap-2">
+                <Heart className="w-4 h-4 text-rose-500" /> Saved Accommodations ({savedProperties.length})
+              </TabsTrigger>
+              <TabsTrigger value="enquiries" className="text-xs sm:text-sm gap-2">
+                <MessageSquare className="w-4 h-4 text-violet-600" /> My Inquiries ({seekerEnquiries.length})
+              </TabsTrigger>
+              <TabsTrigger value="visits" className="text-xs sm:text-sm gap-2">
+                <Calendar className="w-4 h-4 text-blue-600" /> Scheduled Viewings ({userVisits.length})
+              </TabsTrigger>
+              <TabsTrigger value="tools" className="text-xs sm:text-sm gap-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-600" /> Renter Utilities
+              </TabsTrigger>
+            </TabsList>
+
+            {/* TAB 1: SAVED SHORTLIST */}
+            <TabsContent value="saved" className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-base font-bold text-slate-900">Saved Rental Shortlist</h3>
+                <Link to="/compare" className="text-xs text-violet-700 hover:underline flex items-center gap-1 font-semibold">
+                  <Scale className="w-3.5 h-3.5" /> Compare Shortlist
+                </Link>
+              </div>
+
+              {savedProperties.length === 0 ? (
+                <div className="bg-white rounded-2xl border border-slate-200 p-10 text-center text-slate-500 text-sm">
+                  You haven't saved any rental accommodations yet.
+                  <div className="mt-4">
+                    <Link to="/properties">
+                      <Button size="sm" className="bg-violet-600 hover:bg-violet-700 text-white text-xs">
+                        Browse Accommodations
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               ) : (
-                <div className="p-12 text-center bg-white rounded-xl shadow-sm">
-                  <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  <h3 className="mt-4 text-lg font-medium text-gray-900">No bookings found</h3>
-                  <p className="mt-2 text-gray-500">
-                    {user?.role === "buyer" && "You haven't made any bookings yet."}
-                    {user?.role === "seller" && "You haven't received any booking requests yet."}
-                    {user?.role === "admin" && "No bookings have been made on the platform."}
-                  </p>
-                  {user?.role === "buyer" && (
-                    <Button className="mt-6 bg-purple hover:bg-purple-dark">
-                      Browse Properties
-                    </Button>
-                  )}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {savedProperties.map((p) => (
+                    <PropertyCard key={p.id} property={p} />
+                  ))}
                 </div>
               )}
             </TabsContent>
-            
-            {/* Analytics Tab */}
-            <TabsContent value="analytics">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>
-                      {user?.role === "buyer" && "Property Type Preferences"}
-                      {user?.role === "seller" && "Property Type Distribution"}
-                      {user?.role === "admin" && "Property Type Distribution"}
-                    </CardTitle>
-                    <CardDescription>
-                      {user?.role === "buyer" && "Types of properties you've shown interest in"}
-                      {user?.role === "seller" && "Breakdown of your property listings"}
-                      {user?.role === "admin" && "Breakdown of all properties on the platform"}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="h-80">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie
-                            data={dashboardMetrics.chartData.propertyTypeDistribution}
-                            cx="50%"
-                            cy="50%"
-                            labelLine={false}
-                            outerRadius={80}
-                            fill="#8884d8"
-                            dataKey="count"
-                            nameKey="type"
-                            label={({ type, percent }) => `${type}: ${(percent * 100).toFixed(0)}%`}
-                          >
-                            {dashboardMetrics.chartData.propertyTypeDistribution.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                            ))}
-                          </Pie>
-                          <Tooltip />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader>
-                    <CardTitle>
-                      {user?.role === "buyer" && "Booking Trends"}
-                      {user?.role === "seller" && "Booking Requests"}
-                      {user?.role === "admin" && "Booking Trends"}
-                    </CardTitle>
-                    <CardDescription>
-                      {user?.role === "buyer" && "Your booking activity over time"}
-                      {user?.role === "seller" && "Booking requests for your properties"}
-                      {user?.role === "admin" && "Platform-wide booking activity"}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="h-80">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <BarChart
-                          data={dashboardMetrics.chartData.bookingsTrend}
-                          margin={{
-                            top: 5,
-                            right: 30,
-                            left: 20,
-                            bottom: 5,
-                          }}
+
+            {/* TAB 2: MY ENQUIRIES */}
+            <TabsContent value="enquiries" className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-base font-bold text-slate-900">Sent Rental Applications & Responses</h3>
+                <span className="text-xs text-slate-500">Zero phone number leakage</span>
+              </div>
+
+              {seekerEnquiries.length === 0 ? (
+                <div className="bg-white rounded-2xl border border-slate-200 p-10 text-center text-slate-500 text-sm">
+                  No rental inquiries sent yet. Browse a room or PG and click "Send Rental Enquiry".
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {seekerEnquiries.map((enq) => (
+                    <Card key={enq.id} className="border-slate-200 shadow-sm p-4 text-xs space-y-2">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-[11px] font-bold text-violet-700 bg-violet-50 px-2 py-0.5 rounded">
+                            #{enq.id}
+                          </span>
+                          <span className="font-bold text-sm text-slate-900">{enq.propertyTitle}</span>
+                        </div>
+                        <Badge
+                          variant={enq.status === "contact_shared" ? "default" : "secondary"}
+                          className="text-[10px]"
                         >
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="month" />
-                          <YAxis />
-                          <Tooltip />
-                          <Bar dataKey="count" fill="#9b87f5" />
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </CardContent>
-                </Card>
+                          {enq.status === "contact_shared" ? "Contact Shared with Landlord" : enq.status}
+                        </Badge>
+                      </div>
+
+                      <p className="text-slate-600 italic bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                        "{enq.message}"
+                      </p>
+
+                      {enq.ownerReply && (
+                        <div className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-100 text-emerald-900">
+                          <span className="font-bold">Landlord Reply:</span> {enq.ownerReply}
+                        </div>
+                      )}
+
+                      <div className="flex items-center justify-between pt-1 text-slate-400 text-[11px]">
+                        <span>Submitted on {enq.createdAt} • Target Move-in: {enq.moveInDate}</span>
+                        <Link to={`/property/${enq.propertyId}`} className="text-violet-600 hover:underline font-semibold flex items-center gap-1">
+                          View Property <ExternalLink className="w-3 h-3" />
+                        </Link>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+
+            {/* TAB 3: VISITS */}
+            <TabsContent value="visits" className="space-y-4">
+              <h3 className="text-base font-bold text-slate-900">Your Scheduled Property Tours</h3>
+
+              {userVisits.length === 0 ? (
+                <div className="bg-white rounded-2xl border border-slate-200 p-10 text-center text-slate-500 text-sm">
+                  No upcoming property tours scheduled. You can book in-person visits directly on any property page.
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {userVisits.map((v) => (
+                    <Card key={v.id} className="border-slate-200 shadow-sm p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-violet-700 bg-violet-50 px-2 py-0.5 rounded font-bold">
+                            #{v.id}
+                          </span>
+                          <span className="font-bold text-slate-900 text-sm">{v.propertyTitle || "Property Tour"}</span>
+                          <Badge className="bg-emerald-600 text-white text-[10px]">{v.status}</Badge>
+                        </div>
+                        <div className="text-slate-600">
+                          <strong>Date:</strong> {v.date} at {v.timeSlot} • Format: <span className="capitalize">{v.visitType}</span>
+                        </div>
+                        {v.notes && <div className="text-slate-500 italic text-[11px]">Note: {v.notes}</div>}
+                      </div>
+
+                      <Link to={`/property/${v.propertyId}`}>
+                        <Button size="sm" variant="outline" className="text-xs h-8">
+                          View Accommodation
+                        </Button>
+                      </Link>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+
+            {/* TAB 4: RENTER UTILITIES & TOOLS */}
+            <TabsContent value="tools" className="space-y-4">
+              <h3 className="text-base font-bold text-slate-900">Quick Launch Innovation Tools</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <Link to="/affordability" className="p-4 bg-white rounded-xl border border-slate-200 hover:border-violet-300 transition shadow-sm space-y-2">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                    <Calculator className="w-4 h-4" />
+                  </div>
+                  <h4 className="font-bold text-sm text-slate-900">30% Affordability Calculator</h4>
+                  <p className="text-xs text-slate-500">Calculate recommended rent based on your stipend or salary.</p>
+                </Link>
+
+                <Link to="/roommate-matcher" className="p-4 bg-white rounded-xl border border-slate-200 hover:border-violet-300 transition shadow-sm space-y-2">
+                  <div className="w-8 h-8 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center">
+                    <Users className="w-4 h-4" />
+                  </div>
+                  <h4 className="font-bold text-sm text-slate-900">Roommate Matcher</h4>
+                  <p className="text-xs text-slate-500">Match sleep cycles, food habits, and hygiene standards.</p>
+                </Link>
+
+                <Link to="/inspection-checklist" className="p-4 bg-white rounded-xl border border-slate-200 hover:border-violet-300 transition shadow-sm space-y-2">
+                  <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center">
+                    <ShieldCheck className="w-4 h-4" />
+                  </div>
+                  <h4 className="font-bold text-sm text-slate-900">Inspection Checklist</h4>
+                  <p className="text-xs text-slate-500">Carry on-site during tours to audit water pressure and meters.</p>
+                </Link>
               </div>
             </TabsContent>
           </Tabs>
         </div>
       </main>
-      
+
+      {/* Floating comparison drawer */}
+      <CompareFloatingBar />
+
       <FooterSection />
     </div>
   );

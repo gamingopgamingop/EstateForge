@@ -1,26 +1,16 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { useProperties } from "../contexts/PropertiesContext";
+import { useProperties, Property } from "../contexts/PropertiesContext";
+import { useAuth } from "../contexts/AuthContext";
 import HeaderSection from "../components/HeaderSection";
 import FooterSection from "../components/FooterSection";
-import AmenityIcon from "../components/AmenityIcon";
-import { useAuth } from "../contexts/AuthContext";
+import EnquiryModal from "../components/EnquiryModal";
+import ReportListingModal from "../components/ReportListingModal";
+import CompareFloatingBar from "../components/CompareFloatingBar";
 import { Button } from "@/components/ui/button";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import { Calendar } from "@/components/ui/calendar";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import {
   Dialog,
   DialogContent,
@@ -28,55 +18,76 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  MapPin,
+  ShieldCheck,
+  Star,
+  Scale,
+  Heart,
+  Calendar,
+  Clock,
+  Home,
+  Check,
+  Info,
+  Lock,
+  Flag,
+  Share2,
+  ChevronLeft,
+  ChevronRight,
+  Wifi,
+  Utensils,
+  Zap,
+  Sparkles,
+  Building2,
+  AlertTriangle
+} from "lucide-react";
 import { toast } from "sonner";
-import aiResponses from "../data/aiResponses.json";
-import { Loader2, Star, Calendar as CalendarIcon, MapPin, Home, Info, Check } from "lucide-react";
 
-const PropertyDetailPage: React.FC = () => {
+export const PropertyDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { getPropertyById, addBooking } = useProperties();
+  const {
+    getPropertyById,
+    addToCompare,
+    isComparing,
+    isSaved,
+    toggleSaveProperty,
+    addBooking
+  } = useProperties();
   const { isAuthenticated, user } = useAuth();
-  const [property, setProperty] = useState(getPropertyById(Number(id)));
-  const [activeTab, setActiveTab] = useState("overview");
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-  const [loading, setLoading] = useState(false);
-  const [bookingComplete, setBookingComplete] = useState(false);
-  const [enhancedDescription, setEnhancedDescription] = useState("");
-  const [loadingAI, setLoadingAI] = useState(false);
+
+  const property = getPropertyById(Number(id));
+
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [enquiryOpen, setEnquiryOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [scheduleVisitOpen, setScheduleVisitOpen] = useState(false);
+
+  // Visit booking state
+  const [visitDate, setVisitDate] = useState<Date | undefined>(new Date());
+  const [visitTimeSlot, setVisitTimeSlot] = useState("11:00 AM");
+  const [visitType, setVisitType] = useState<"in-person" | "virtual">("in-person");
+  const [visitNotes, setVisitNotes] = useState("");
 
   useEffect(() => {
-    // Scroll to top when the component mounts
     window.scrollTo(0, 0);
-    
-    if (property) {
-      // Simulate loading enhanced AI description
-      setLoadingAI(true);
-      setTimeout(() => {
-        const propertyDesc = aiResponses.propertyAssistant.descriptions.find(
-          (desc) => desc.propertyId === property.id
-        );
-        if (propertyDesc) {
-          setEnhancedDescription(propertyDesc.enhancedDescription);
-        }
-        setLoadingAI(false);
-      }, 1500);
-    }
-  }, [property]);
+  }, [id]);
 
   if (!property) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col bg-slate-50">
         <HeaderSection />
-        <main className="flex-grow pt-24 flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold mb-4">Property Not Found</h1>
-            <p className="text-gray-600 mb-6">
-              Sorry, we couldn't find the property you're looking for.
+        <main className="flex-grow pt-32 pb-16 flex items-center justify-center">
+          <div className="text-center max-w-md p-8 bg-white rounded-2xl border border-slate-200 shadow-sm">
+            <Building2 className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+            <h1 className="text-2xl font-bold text-slate-900 mb-2">Accommodation Not Found</h1>
+            <p className="text-xs text-slate-500 mb-6">
+              The rental property you are looking for may have been archived or rented out.
             </p>
             <Link to="/properties">
-              <Button>Back to Properties</Button>
+              <Button className="bg-violet-600 hover:bg-violet-700 text-white text-xs">
+                Browse Active Rentals
+              </Button>
             </Link>
           </div>
         </main>
@@ -85,535 +96,450 @@ const PropertyDetailPage: React.FC = () => {
     );
   }
 
-  const handleBooking = () => {
-    if (!isAuthenticated) {
-      toast.error("Please log in to book a viewing");
+  const comparing = isComparing(property.id);
+  const saved = isSaved(property.id);
+  const isAvailable = property.listingStatus === "Available";
+
+  const handleConfirmVisit = () => {
+    if (!visitDate) {
+      toast.error("Please pick a date for your visit");
       return;
     }
 
-    if (!selectedDate) {
-      toast.error("Please select a date for your viewing");
-      return;
-    }
+    addBooking({
+      userId: user?.id || 1,
+      propertyId: property.id,
+      propertyTitle: property.title,
+      date: visitDate.toISOString().split("T")[0],
+      timeSlot: visitTimeSlot,
+      visitType,
+      status: "pending",
+      seekerName: user?.name || "Seeker Rahul",
+      notes: visitNotes || `Scheduled ${visitType} tour via RentRight`
+    });
 
-    setLoading(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      addBooking({
-        userId: user?.id || 1,
-        propertyId: property.id,
-        date: selectedDate.toISOString().split("T")[0],
-        status: "pending",
-        notes: "Booking request from property detail page"
-      });
-      
-      setLoading(false);
-      setBookingComplete(true);
-    }, 1500);
+    setScheduleVisitOpen(false);
   };
 
-  const formatDate = (dateString: string) => {
-    const options: Intl.DateTimeFormatOptions = {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+  const handleShare = () => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(window.location.href);
+      toast.success("Property link copied to clipboard!");
+    }
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-slate-50">
       <HeaderSection />
-      
-      <main className="flex-grow pt-24">
-        {/* Property Title and Hero Section */}
-        <div className="relative h-[50vh] overflow-hidden">
-          <div className="absolute inset-0 z-0">
-            <img
-              src={property.images[0]}
-              alt={property.title}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-transparent"></div>
-          </div>
-          
-          <div className="container mx-auto px-4 h-full flex flex-col justify-end pb-12 relative z-10">
-            <div className="animate-fade-in">
-              <span className="px-3 py-1 bg-purple rounded-full text-white text-sm font-medium mb-4 inline-block">
-                {property.status}
-              </span>
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-                {property.title}
-              </h1>
-              <div className="flex flex-wrap items-center text-white gap-4 mb-2">
-                <div className="flex items-center">
-                  <MapPin className="w-5 h-5 mr-1" />
-                  <span>
-                    {property.location.address}, {property.location.city},{" "}
-                    {property.location.state}
-                  </span>
-                </div>
-                <div className="flex items-center">
-                  <Star className="w-5 h-5 fill-yellow-500 text-yellow-500 mr-1" />
-                  <span>{property.rating} Rating</span>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-4 mt-4">
-                <span className="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm">
-                  {property.bedrooms} Bedrooms
-                </span>
-                <span className="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm">
-                  {property.bathrooms} Bathrooms
-                </span>
-                <span className="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm">
-                  {property.area} sq ft
-                </span>
-                <span className="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm">
-                  Built {property.yearBuilt}
-                </span>
-              </div>
+
+      <main className="flex-grow pt-24 pb-16">
+        <div className="container mx-auto px-4 max-w-6xl">
+          {/* Breadcrumb & Top Actions */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+            <div className="flex items-center gap-2 text-xs text-slate-500">
+              <Link to="/properties" className="hover:text-violet-600 font-medium">Accommodations</Link>
+              <span>/</span>
+              <span>{property.locality}</span>
+              <span>/</span>
+              <span className="text-slate-900 font-semibold truncate max-w-xs">{property.title}</span>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => addToCompare(property.id)}
+                className={`text-xs h-8 gap-1.5 ${comparing ? "bg-violet-50 text-violet-700 border-violet-300" : ""}`}
+              >
+                <Scale className="w-3.5 h-3.5" />
+                {comparing ? "Comparing" : "Add to Compare"}
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => toggleSaveProperty(property.id)}
+                className={`text-xs h-8 gap-1.5 ${saved ? "text-rose-600 bg-rose-50 border-rose-300" : ""}`}
+              >
+                <Heart className={`w-3.5 h-3.5 ${saved ? "fill-rose-600" : ""}`} />
+                {saved ? "Saved" : "Save"}
+              </Button>
+
+              <Button variant="outline" size="sm" onClick={handleShare} className="text-xs h-8 px-2.5">
+                <Share2 className="w-3.5 h-3.5" />
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setReportOpen(true)}
+                className="text-xs h-8 text-rose-600 hover:bg-rose-50 gap-1 px-2"
+                title="Report Suspicious or Outdated Listing"
+              >
+                <Flag className="w-3.5 h-3.5" /> Report
+              </Button>
             </div>
           </div>
-        </div>
-        
-        <div className="container mx-auto px-4 py-12">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Main Content */}
-            <div className="lg:col-span-2">
-              <Tabs defaultValue="overview" onValueChange={setActiveTab} className="animate-fade-in">
-                <TabsList className="w-full grid grid-cols-5 mb-8">
-                  <TabsTrigger value="overview" className="rounded-l-md">
-                    <Home className="w-4 h-4 mr-2 hidden sm:inline" />
-                    Overview
-                  </TabsTrigger>
-                  <TabsTrigger value="gallery">
-                    <svg className="w-4 h-4 mr-2 hidden sm:inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    Gallery
-                  </TabsTrigger>
-                  <TabsTrigger value="amenities">
-                    <Check className="w-4 h-4 mr-2 hidden sm:inline" />
-                    Amenities
-                  </TabsTrigger>
-                  <TabsTrigger value="location">
-                    <MapPin className="w-4 h-4 mr-2 hidden sm:inline" />
-                    Location
-                  </TabsTrigger>
-                  <TabsTrigger value="details" className="rounded-r-md">
-                    <Info className="w-4 h-4 mr-2 hidden sm:inline" />
-                    Details
-                  </TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="overview" className="animate-fade-in">
-                  <div className="mb-8">
-                    <h2 className="text-2xl font-bold mb-4">About This Property</h2>
-                    <p className="text-gray-600 mb-4">{property.description}</p>
-                    
-                    {loadingAI ? (
-                      <div className="flex items-center space-x-2 mt-6">
-                        <Loader2 className="h-4 w-4 animate-spin text-purple" />
-                        <span className="text-sm text-gray-500">AI is enhancing your property description...</span>
-                      </div>
-                    ) : enhancedDescription && (
-                      <div className="mt-6 p-4 bg-purple-light rounded-xl border border-purple/20">
-                        <h3 className="text-lg font-semibold mb-2 flex items-center">
-                          <svg className="w-5 h-5 mr-2 text-purple" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                          </svg>
-                          AI-Enhanced Description
-                        </h3>
-                        <p className="text-gray-700">{enhancedDescription}</p>
-                      </div>
-                    )}
+
+          {/* Photo Gallery Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 mb-8 rounded-2xl overflow-hidden bg-slate-900 p-1">
+            <div className="md:col-span-8 relative aspect-[16/10] bg-slate-950 overflow-hidden rounded-xl">
+              <img
+                src={property.images[activeImageIndex] || property.images[0]}
+                alt={property.title}
+                className="w-full h-full object-cover"
+              />
+
+              {/* Status and Verified Badges */}
+              <div className="absolute top-3 left-3 flex gap-2">
+                <Badge className={`${isAvailable ? "bg-emerald-600" : "bg-slate-700"} text-white text-xs`}>
+                  {property.listingStatus}
+                </Badge>
+                {property.verificationStatus === "Verified" ? (
+                  <Badge className="bg-emerald-50 text-emerald-800 border border-emerald-300 text-xs font-semibold flex items-center gap-1">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Physically Verified
+                  </Badge>
+                ) : (
+                  <Badge variant="secondary" className="bg-amber-100 text-amber-800 text-xs">
+                    Owner Claimed
+                  </Badge>
+                )}
+              </div>
+            </div>
+
+            <div className="md:col-span-4 grid grid-cols-2 md:grid-cols-1 gap-2">
+              {property.images.map((img, idx) => (
+                <div
+                  key={idx}
+                  onClick={() => setActiveImageIndex(idx)}
+                  className={`aspect-[16/9] rounded-xl overflow-hidden cursor-pointer border-2 transition ${
+                    activeImageIndex === idx ? "border-violet-500 shadow-md" : "border-transparent opacity-70 hover:opacity-100"
+                  }`}
+                >
+                  <img src={img} alt={`Preview ${idx + 1}`} className="w-full h-full object-cover" />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Main 2-Column Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Left Column: Details, Facilities, Rules, AI Insight */}
+            <div className="lg:col-span-8 space-y-6">
+              {/* Title & Key Highlights Card */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2.5 py-1 rounded-lg bg-violet-50 text-violet-800 text-xs font-bold">
+                      {property.accommodationType}
+                    </span>
+                    <span className="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-medium">
+                      {property.occupancyPreference} Occupancy
+                    </span>
+                    <span className="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-medium">
+                      {property.furnishing}
+                    </span>
                   </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                    <div>
-                      <h3 className="text-xl font-bold mb-4">Property Features</h3>
-                      <ul className="space-y-2">
-                        <li className="flex items-center text-gray-600">
-                          <svg className="w-5 h-5 text-purple mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                          {property.bedrooms} Bedrooms
-                        </li>
-                        <li className="flex items-center text-gray-600">
-                          <svg className="w-5 h-5 text-purple mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                          {property.bathrooms} Bathrooms
-                        </li>
-                        <li className="flex items-center text-gray-600">
-                          <svg className="w-5 h-5 text-purple mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                          {property.area} sq ft
-                        </li>
-                        <li className="flex items-center text-gray-600">
-                          <svg className="w-5 h-5 text-purple mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                          Built in {property.yearBuilt}
-                        </li>
-                      </ul>
-                    </div>
-                    
-                    <div>
-                      <h3 className="text-xl font-bold mb-4">Property Type</h3>
-                      <ul className="space-y-2">
-                        <li className="flex items-center text-gray-600">
-                          <svg className="w-5 h-5 text-purple mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                          {property.type}
-                        </li>
-                        <li className="flex items-center text-gray-600">
-                          <svg className="w-5 h-5 text-purple mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                          {property.propertyType}
-                        </li>
-                        <li className="flex items-center text-gray-600">
-                          <svg className="w-5 h-5 text-purple mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                          {property.status}
-                        </li>
-                        <li className="flex items-center text-gray-600">
-                          <svg className="w-5 h-5 text-purple mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                          Available from {formatDate(property.availableFrom)}
-                        </li>
-                      </ul>
-                    </div>
+
+                  <div className="flex items-center gap-1 text-xs font-bold text-slate-700 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200/60">
+                    <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                    <span>{property.rating} Rating</span>
                   </div>
-                </TabsContent>
-                
-                <TabsContent value="gallery" className="animate-fade-in">
-                  <h2 className="text-2xl font-bold mb-4">Property Gallery</h2>
-                  <Carousel className="w-full">
-                    <CarouselContent>
-                      {property.images.map((image, index) => (
-                        <CarouselItem key={index} className="aspect-video">
-                          <img
-                            src={image}
-                            alt={`${property.title} - Image ${index + 1}`}
-                            className="w-full h-full object-cover rounded-xl"
-                          />
-                        </CarouselItem>
+                </div>
+
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-snug">
+                  {property.title}
+                </h1>
+
+                <div className="flex items-center gap-2 text-slate-600 text-xs sm:text-sm">
+                  <MapPin className="w-4 h-4 text-violet-600 shrink-0" />
+                  <span>{property.address}, {property.locality}, {property.city}</span>
+                </div>
+
+                {/* Quick specs grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-slate-100 text-xs">
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                    <span className="text-slate-400 block text-[10px] uppercase font-bold">Available From</span>
+                    <span className="font-semibold text-slate-800">{property.availableFrom || "Immediate"}</span>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                    <span className="text-slate-400 block text-[10px] uppercase font-bold">Target Tenant</span>
+                    <span className="font-semibold text-slate-800">{property.targetAudience}</span>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                    <span className="text-slate-400 block text-[10px] uppercase font-bold">Nearest Metro</span>
+                    <span className="font-semibold text-slate-800">{property.metroDistanceKm ? `${property.metroDistanceKm} km` : "Nearby"}</span>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                    <span className="text-slate-400 block text-[10px] uppercase font-bold">Room Size</span>
+                    <span className="font-semibold text-slate-800">{property.area || 220} sq ft</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tabs: Overview, Facilities, Rules, Location */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm">
+                <Tabs defaultValue="overview" className="space-y-6">
+                  <TabsList className="bg-slate-100 p-1 rounded-xl">
+                    <TabsTrigger value="overview" className="text-xs">Overview & Living</TabsTrigger>
+                    <TabsTrigger value="amenities" className="text-xs">Amenities & Food</TabsTrigger>
+                    <TabsTrigger value="rules" className="text-xs">House Rules & Curfew</TabsTrigger>
+                    <TabsTrigger value="transparency" className="text-xs">Fair Tenancy Notice</TabsTrigger>
+                  </TabsList>
+
+                  {/* Overview */}
+                  <TabsContent value="overview" className="space-y-4 text-xs text-slate-700 leading-relaxed">
+                    <h3 className="text-base font-bold text-slate-900">About this Accommodation</h3>
+                    <p>{property.description}</p>
+
+                    <div className="p-4 rounded-xl bg-violet-50/70 border border-violet-100 flex items-start gap-3">
+                      <Sparkles className="w-5 h-5 text-violet-600 shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="font-bold text-violet-900 text-xs">RentRight Tenant Transparency Note</h4>
+                        <p className="text-[11px] text-violet-800 mt-1">
+                          This accommodation has been vetted for student and early-career professional residency. All utilities, maintenance charges, and sub-meter policies are declared upfront with zero hidden broker commissions.
+                        </p>
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  {/* Amenities */}
+                  <TabsContent value="amenities" className="space-y-4">
+                    <h3 className="text-base font-bold text-slate-900">Included Amenities & Services</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                      {property.amenities.map((amenity, idx) => (
+                        <div key={idx} className="flex items-center gap-2.5 p-3 rounded-xl bg-slate-50 border border-slate-100">
+                          <div className="w-6 h-6 rounded-full bg-violet-100 text-violet-700 flex items-center justify-center shrink-0">
+                            <Check className="w-3.5 h-3.5" />
+                          </div>
+                          <span className="font-semibold text-slate-800">{amenity}</span>
+                        </div>
                       ))}
-                    </CarouselContent>
-                    <CarouselPrevious />
-                    <CarouselNext />
-                  </Carousel>
-                  
-                  <div className="grid grid-cols-4 gap-4 mt-4">
-                    {property.images.map((image, index) => (
-                      <img
-                        key={index}
-                        src={image}
-                        alt={`Thumbnail ${index + 1}`}
-                        className="h-24 w-full object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
-                      />
-                    ))}
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="amenities" className="animate-fade-in">
-                  <h2 className="text-2xl font-bold mb-6">Property Amenities</h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {property.amenities.map((amenity, index) => (
-                      <div
-                        key={index}
-                        className="p-4 bg-gray-50 rounded-lg flex items-start hover:bg-purple-light transition-colors"
-                      >
-                        <AmenityIcon amenity={amenity} />
-                      </div>
-                    ))}
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="location" className="animate-fade-in">
-                  <h2 className="text-2xl font-bold mb-6">Property Location</h2>
-                  <div className="bg-gray-100 rounded-xl overflow-hidden h-[400px] mb-6">
-                    <iframe
-                      width="100%"
-                      height="100%"
-                      frameBorder="0"
-                      title="Map"
-                      src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBtdr5J6dCJL4fUFH7XgwVNoZmJlD0zSNI&q=${encodeURIComponent(
-                        `${property.location.address}, ${property.location.city}, ${property.location.state}`
-                      )}`}
-                      allowFullScreen
-                    ></iframe>
-                  </div>
-                  
-                  <div className="mb-6">
-                    <h3 className="text-xl font-semibold mb-3">Address</h3>
-                    <p className="text-gray-600">
-                      {property.location.address}, {property.location.city},{" "}
-                      {property.location.state} {property.location.zip}
+                    </div>
+                  </TabsContent>
+
+                  {/* House Rules */}
+                  <TabsContent value="rules" className="space-y-4">
+                    <h3 className="text-base font-bold text-slate-900">Community & House Guidelines</h3>
+                    <div className="space-y-2 text-xs">
+                      {property.houseRules && property.houseRules.length > 0 ? (
+                        property.houseRules.map((rule, idx) => (
+                          <div key={idx} className="flex items-start gap-2.5 p-3 rounded-xl bg-slate-50 border border-slate-100 text-slate-700">
+                            <span className="w-1.5 h-1.5 rounded-full bg-violet-600 mt-1.5 shrink-0" />
+                            <span>{rule}</span>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-slate-500">Standard quiet community guidelines apply after 10:30 PM.</p>
+                      )}
+                    </div>
+                  </TabsContent>
+
+                  {/* Fair Tenancy Notice */}
+                  <TabsContent value="transparency" className="space-y-4 text-xs leading-relaxed text-slate-600">
+                    <h3 className="text-base font-bold text-slate-900">RentRight Non-Discrimination Tenancy Clause</h3>
+                    <p>
+                      In adherence to HackVision Problem Statement A3 and constitutional principles, this accommodation operates under RentRight's strict zero-discrimination policy:
                     </p>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-xl font-semibold mb-3">Nearby Amenities</h3>
-                    <ul className="space-y-2">
-                      <li className="flex items-center text-gray-600">
-                        <svg className="w-5 h-5 text-purple mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        Shopping Centers: 0.5 miles
-                      </li>
-                      <li className="flex items-center text-gray-600">
-                        <svg className="w-5 h-5 text-purple mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        Restaurants: 0.3 miles
-                      </li>
-                      <li className="flex items-center text-gray-600">
-                        <svg className="w-5 h-5 text-purple mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        Schools: 1.2 miles
-                      </li>
-                      <li className="flex items-center text-gray-600">
-                        <svg className="w-5 h-5 text-purple mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        Parks: 0.8 miles
-                      </li>
-                      <li className="flex items-center text-gray-600">
-                        <svg className="w-5 h-5 text-purple mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        Public Transportation: 0.4 miles
-                      </li>
+                    <ul className="list-disc list-inside space-y-1.5 text-slate-700 font-medium">
+                      <li>No applicant may be rejected based on caste, religion, food habit, or gender identity.</li>
+                      <li>Security deposits must be refunded in full within 7 business days of vacating, subject only to actual utility dues and standard agreed paint deductions.</li>
+                      <li>Tenant private phone numbers are never publicly disclosed without written consent.</li>
                     </ul>
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="details" className="animate-fade-in">
-                  <h2 className="text-2xl font-bold mb-6">Property Details</h2>
-                  
-                  <div className="mb-8">
-                    <h3 className="text-xl font-semibold mb-3">Key Details</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <ul className="space-y-4">
-                          <li className="flex justify-between">
-                            <span className="text-gray-600">Property ID:</span>
-                            <span className="font-medium">{property.id}</span>
-                          </li>
-                          <li className="flex justify-between">
-                            <span className="text-gray-600">Property Type:</span>
-                            <span className="font-medium">{property.propertyType}</span>
-                          </li>
-                          <li className="flex justify-between">
-                            <span className="text-gray-600">Property Status:</span>
-                            <span className="font-medium">{property.status}</span>
-                          </li>
-                          <li className="flex justify-between">
-                            <span className="text-gray-600">Area:</span>
-                            <span className="font-medium">{property.area} sq ft</span>
-                          </li>
-                          <li className="flex justify-between">
-                            <span className="text-gray-600">Bedrooms:</span>
-                            <span className="font-medium">{property.bedrooms}</span>
-                          </li>
-                          <li className="flex justify-between">
-                            <span className="text-gray-600">Bathrooms:</span>
-                            <span className="font-medium">{property.bathrooms}</span>
-                          </li>
-                        </ul>
-                      </div>
-                      <div>
-                        <ul className="space-y-4">
-                          <li className="flex justify-between">
-                            <span className="text-gray-600">Year Built:</span>
-                            <span className="font-medium">{property.yearBuilt}</span>
-                          </li>
-                          <li className="flex justify-between">
-                            <span className="text-gray-600">Available From:</span>
-                            <span className="font-medium">{formatDate(property.availableFrom)}</span>
-                          </li>
-                          <li className="flex justify-between">
-                            <span className="text-gray-600">Price:</span>
-                            <span className="font-medium">${property.price.toLocaleString()}</span>
-                          </li>
-                          {property.status === "For Rent" && (
-                            <li className="flex justify-between">
-                              <span className="text-gray-600">Price Per Month:</span>
-                              <span className="font-medium">${property.pricePerMonth.toLocaleString()}</span>
-                            </li>
-                          )}
-                          <li className="flex justify-between">
-                            <span className="text-gray-600">Rating:</span>
-                            <span className="font-medium flex items-center">
-                              {property.rating}
-                              <Star className="w-4 h-4 text-yellow-500 fill-yellow-500 ml-1" />
-                            </span>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-xl font-semibold mb-3">Tags</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {property.tags.map((tag, index) => (
-                        <span
-                          key={index}
-                          className="px-3 py-1 bg-gray-100 rounded-full text-gray-700 text-sm"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </TabsContent>
-              </Tabs>
+                  </TabsContent>
+                </Tabs>
+              </div>
             </div>
-            
-            {/* Sidebar */}
-            <div className="lg:col-span-1">
-              <div className="sticky top-32 animate-fade-in">
-                <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
-                  <div className="p-6">
-                    <h3 className="text-2xl font-bold mb-2">
-                      ${property.price.toLocaleString()}
-                    </h3>
-                    {property.status === "For Rent" && (
-                      <p className="text-gray-600 mb-4">
-                        ${property.pricePerMonth.toLocaleString()} / month
-                      </p>
-                    )}
-                    
-                    <div className="space-y-6">
-                      <div>
-                        <h4 className="font-semibold mb-2 flex items-center">
-                          <CalendarIcon className="w-4 h-4 mr-2 text-purple" />
-                          Schedule a Viewing
-                        </h4>
-                        
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button className="w-full bg-purple hover:bg-purple-dark">
-                              Book Now
-                            </Button>
-                          </DialogTrigger>
-                          
-                          <DialogContent className="sm:max-w-md">
-                            {bookingComplete ? (
-                              <div className="py-6 text-center">
-                                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                  <svg className="w-8 h-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                  </svg>
-                                </div>
-                                <h2 className="text-xl font-bold mb-2">Booking Confirmed!</h2>
-                                <p className="text-gray-600 mb-6">
-                                  Your viewing has been scheduled for{" "}
-                                  {selectedDate && formatDate(selectedDate.toISOString())}.
-                                </p>
-                                <Button className="bg-purple hover:bg-purple-dark" onClick={() => setBookingComplete(false)}>
-                                  Close
-                                </Button>
-                              </div>
-                            ) : (
-                              <>
-                                <DialogHeader>
-                                  <DialogTitle>Schedule a Viewing</DialogTitle>
-                                  <DialogDescription>
-                                    Select a date to visit this property
-                                  </DialogDescription>
-                                </DialogHeader>
-                                
-                                <div className="py-6">
-                                  <Calendar
-                                    mode="single"
-                                    selected={selectedDate}
-                                    onSelect={setSelectedDate}
-                                    disabled={(date) => {
-                                      const today = new Date();
-                                      today.setHours(0, 0, 0, 0);
-                                      return date < today;
-                                    }}
-                                    className="rounded-md border mx-auto"
-                                  />
-                                </div>
-                                
-                                <DialogFooter>
-                                  <Button type="button" variant="outline" className="mr-2">
-                                    Cancel
-                                  </Button>
-                                  <Button 
-                                    className="bg-purple hover:bg-purple-dark"
-                                    onClick={handleBooking}
-                                    disabled={!selectedDate || loading}
-                                  >
-                                    {loading ? (
-                                      <>
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Processing...
-                                      </>
-                                    ) : (
-                                      "Confirm Booking"
-                                    )}
-                                  </Button>
-                                </DialogFooter>
-                              </>
-                            )}
-                          </DialogContent>
-                        </Dialog>
-                      </div>
-                      
-                      <div className="pt-4 border-t border-gray-200">
-                        <h4 className="font-semibold mb-4">Contact Agent</h4>
-                        <div className="flex items-center mb-4">
-                          <div className="w-12 h-12 rounded-full bg-gray-200 mr-3 overflow-hidden">
-                            <img
-                              src="https://images.unsplash.com/photo-1472396961693-142e6e269027"
-                              alt="Agent"
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                          <div>
-                            <p className="font-medium">Jane Smith</p>
-                            <p className="text-gray-600 text-sm">Property Agent</p>
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <Button variant="outline" className="w-full flex items-center justify-center">
-                            <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                            </svg>
-                            Call Agent
-                          </Button>
-                          
-                          <Button variant="outline" className="w-full flex items-center justify-center">
-                            <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
-                            Email Agent
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
+
+            {/* Right Column: Pricing Breakdown & Action Sticky Card */}
+            <div className="lg:col-span-4 space-y-5 sticky top-24">
+              <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-lg space-y-5">
+                {/* Rent & Deposit Box */}
+                <div className="pb-4 border-b border-slate-100">
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-3xl font-extrabold text-slate-900">
+                      ₹{property.monthlyRent?.toLocaleString()}
+                    </span>
+                    <span className="text-xs text-slate-500 font-medium">/month</span>
+                  </div>
+                  <div className="text-xs text-slate-500 mt-1">
+                    Security Deposit: <strong>₹{property.securityDeposit?.toLocaleString()}</strong>
                   </div>
                 </div>
+
+                {/* Move-in Cost Estimator */}
+                <div className="space-y-2 text-xs">
+                  <div className="flex justify-between text-slate-600">
+                    <span>1st Month Rent:</span>
+                    <span>₹{property.monthlyRent?.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>Refundable Deposit:</span>
+                    <span>₹{property.securityDeposit?.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>Maintenance & Care:</span>
+                    <span>{property.maintenance ? `₹${property.maintenance}` : "₹0 (Included)"}</span>
+                  </div>
+                  <div className="pt-2 border-t border-slate-100 flex justify-between font-bold text-slate-900 text-sm">
+                    <span>Total Move-in Cost:</span>
+                    <span className="text-violet-700">
+                      ₹{(property.monthlyRent + property.securityDeposit + (property.maintenance || 0)).toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+
+                {/* CTA Buttons */}
+                <div className="space-y-2.5 pt-2">
+                  <Button
+                    onClick={() => setEnquiryOpen(true)}
+                    className="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold py-5 text-sm shadow-md gap-2"
+                  >
+                    Send Rental Enquiry
+                  </Button>
+
+                  <Button
+                    onClick={() => setScheduleVisitOpen(true)}
+                    variant="outline"
+                    className="w-full border-violet-200 text-violet-700 hover:bg-violet-50 font-semibold py-5 text-xs gap-2"
+                  >
+                    <Calendar className="w-4 h-4 text-violet-600" />
+                    Schedule Property Viewing
+                  </Button>
+                </div>
+
+                {/* Privacy & Anti-Spam Guarantee Box */}
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 flex items-start gap-2.5 text-[11px] text-slate-600">
+                  <Lock className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold text-slate-800">Spam-Free Enquiry Flow:</span> Your phone number remains hidden. Only you choose when to share contact details with {property.ownerName}.
+                  </div>
+                </div>
+
+                {/* Owner Info Snippet */}
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                  <div>
+                    <div className="font-semibold text-slate-900">{property.ownerName}</div>
+                    <div className="text-[10px] text-slate-400">{property.ownerResponseTime || "Replies quickly"}</div>
+                  </div>
+                  <Badge variant="outline" className="text-[10px] text-emerald-700 border-emerald-300 bg-emerald-50">
+                    Verified Host
+                  </Badge>
+                </div>
+              </div>
+
+              {/* Innovation Shortcut Widget */}
+              <div className="p-4 rounded-xl bg-violet-50 border border-violet-200 text-xs space-y-2">
+                <div className="font-bold text-violet-900 flex items-center gap-1.5">
+                  <Scale className="w-3.5 h-3.5 text-violet-600" /> Compare with other PGs?
+                </div>
+                <p className="text-[11px] text-violet-800">
+                  Select 2-3 accommodations and view pricing, WiFi speed, and deposit side-by-side.
+                </p>
+                <Link to="/compare" className="text-violet-700 font-bold hover:underline inline-block text-[11px]">
+                  Open Comparison Matrix →
+                </Link>
               </div>
             </div>
           </div>
         </div>
       </main>
-      
+
+      {/* Enquiry Modal */}
+      <EnquiryModal
+        property={property}
+        isOpen={enquiryOpen}
+        onClose={() => setEnquiryOpen(false)}
+      />
+
+      {/* Report Modal */}
+      <ReportListingModal
+        property={property}
+        isOpen={reportOpen}
+        onClose={() => setReportOpen(false)}
+      />
+
+      {/* Schedule Visit Modal */}
+      <Dialog open={scheduleVisitOpen} onOpenChange={setScheduleVisitOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold">Schedule Property Tour</DialogTitle>
+            <DialogDescription className="text-xs">
+              Book an in-person or virtual tour of {property.title} with the landlord.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-2 text-xs">
+            <div>
+              <label className="font-semibold text-slate-700 block mb-1">Select Date *</label>
+              <CalendarComponent
+                mode="single"
+                selected={visitDate}
+                onSelect={setVisitDate}
+                disabled={(date) => {
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0);
+                  return date < today;
+                }}
+                className="rounded-lg border border-slate-200 mx-auto"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="font-semibold text-slate-700 block mb-1">Preferred Time Slot</label>
+                <select
+                  value={visitTimeSlot}
+                  onChange={(e) => setVisitTimeSlot(e.target.value)}
+                  className="w-full rounded-md border border-input p-2 text-xs"
+                >
+                  <option value="10:00 AM">10:00 AM (Morning)</option>
+                  <option value="11:30 AM">11:30 AM (Morning)</option>
+                  <option value="02:30 PM">02:30 PM (Afternoon)</option>
+                  <option value="05:00 PM">05:00 PM (Evening)</option>
+                  <option value="06:30 PM">06:30 PM (Evening)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="font-semibold text-slate-700 block mb-1">Tour Format</label>
+                <select
+                  value={visitType}
+                  onChange={(e) => setVisitType(e.target.value as any)}
+                  className="w-full rounded-md border border-input p-2 text-xs"
+                >
+                  <option value="in-person">In-Person Visit</option>
+                  <option value="virtual">Virtual Video Tour</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="font-semibold text-slate-700 block mb-1">Special Notes / Questions</label>
+              <input
+                type="text"
+                value={visitNotes}
+                onChange={(e) => setVisitNotes(e.target.value)}
+                placeholder="e.g. Would like to inspect water pressure & WiFi speed"
+                className="w-full rounded-md border border-input p-2 text-xs"
+              />
+            </div>
+          </div>
+
+          <DialogFooter className="pt-2">
+            <Button variant="outline" size="sm" onClick={() => setScheduleVisitOpen(false)}>
+              Cancel
+            </Button>
+            <Button size="sm" onClick={handleConfirmVisit} className="bg-violet-600 hover:bg-violet-700 text-white">
+              Confirm Schedule
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Floating comparison drawer */}
+      <CompareFloatingBar />
+
       <FooterSection />
     </div>
   );

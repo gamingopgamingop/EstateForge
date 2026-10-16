@@ -1,34 +1,30 @@
-
 import React, { useEffect, useState } from "react";
 import HeaderSection from "../components/HeaderSection";
 import FooterSection from "../components/FooterSection";
 import FilterBar from "../components/FilterBar";
 import PropertyCard from "../components/PropertyCard";
-import { useProperties } from "../contexts/PropertiesContext";
+import CompareFloatingBar from "../components/CompareFloatingBar";
+import { useProperties, FilterParams } from "../contexts/PropertiesContext";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, Sparkles, Building2, ShieldCheck, Scale, Calculator } from "lucide-react";
+import { Link } from "react-router-dom";
 
-const PropertiesPage: React.FC = () => {
+export const PropertiesPage: React.FC = () => {
   const { filteredProperties, filterProperties, loading } = useProperties();
-  const [visibleProperties, setVisibleProperties] = useState<number>(6);
+  const [visibleProperties, setVisibleProperties] = useState<number>(9);
   const [isFiltering, setIsFiltering] = useState<boolean>(false);
 
   useEffect(() => {
-    // Scroll to top when the component mounts
     window.scrollTo(0, 0);
   }, []);
 
-  const handleFilter = (filters: Record<string, any>) => {
+  const handleFilter = (filters: FilterParams) => {
     setIsFiltering(true);
     filterProperties(filters);
-    
-    // Reset visible properties count when filtering
-    setVisibleProperties(6);
-    
-    // Simulate delay for loading animation
+    setVisibleProperties(9);
     setTimeout(() => {
       setIsFiltering(false);
-    }, 800);
+    }, 300);
   };
 
   const loadMoreProperties = () => {
@@ -36,61 +32,86 @@ const PropertiesPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-slate-50">
       <HeaderSection />
-      
-      {/* Main content */}
-      <main className="flex-grow pt-24">
-        <div className="container mx-auto px-4 py-12">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold mb-4 animate-fade-in">Find Your Perfect Property</h1>
-            <p className="text-gray-600 max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
-              Browse our extensive collection of properties and use our powerful filters to find exactly what you're looking for.
+
+      <main className="flex-grow pt-24 pb-16">
+        <div className="container mx-auto px-4 max-w-7xl">
+          {/* Header */}
+          <div className="text-center mb-8 max-w-3xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-100 text-violet-800 text-xs font-semibold uppercase tracking-wider mb-2">
+              <Building2 className="w-3.5 h-3.5" /> Verified Student & Professional Accommodations
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+              Discover Transparent Rental Housing
+            </h1>
+            <p className="text-slate-600 mt-2 text-xs sm:text-sm">
+              Filter by budget, locality, private room, or PG twin-sharing with complete rent & deposit breakdown.
             </p>
           </div>
-          
+
           {/* Filter Bar */}
-          <div className="mb-12 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-            <FilterBar onFilter={handleFilter} />
+          <FilterBar onFilter={handleFilter} />
+
+          {/* Status & Results Count */}
+          <div className="flex items-center justify-between mb-6 text-xs text-slate-500 font-medium">
+            <span>
+              Showing <strong className="text-slate-900">{Math.min(visibleProperties, filteredProperties.length)}</strong> of <strong className="text-slate-900">{filteredProperties.length}</strong> rental listings
+            </span>
+            <div className="flex items-center gap-3">
+              <Link to="/affordability" className="text-emerald-700 hover:underline flex items-center gap-1 font-semibold">
+                <Calculator className="w-3.5 h-3.5" /> 30% Budget Calculator
+              </Link>
+              <Link to="/compare" className="text-violet-700 hover:underline flex items-center gap-1 font-semibold">
+                <Scale className="w-3.5 h-3.5" /> Comparison Matrix
+              </Link>
+            </div>
           </div>
-          
+
           {/* Properties Grid */}
           <div className="min-h-[400px]">
             {isFiltering || loading ? (
               <div className="flex flex-col items-center justify-center h-[400px]">
-                <Loader2 className="h-12 w-12 text-purple animate-spin mb-4" />
-                <p className="text-gray-600">Finding the perfect properties for you...</p>
+                <Loader2 className="h-10 w-10 text-violet-600 animate-spin mb-3" />
+                <p className="text-slate-600 text-sm">Filtering transparent accommodations...</p>
               </div>
             ) : filteredProperties.length === 0 ? (
-              <div className="text-center py-12">
-                <svg className="mx-auto h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <h3 className="mt-4 text-lg font-medium text-gray-900">No properties found</h3>
-                <p className="mt-2 text-gray-500">Try adjusting your filters to find more properties.</p>
+              <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center max-w-md mx-auto my-8">
+                <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400">
+                  <Building2 className="w-8 h-8" />
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 mb-1">No Accommodations Found</h3>
+                <p className="text-xs text-slate-500 mb-4 leading-relaxed">
+                  No listings matched your exact search filters. Try widening your budget slider or clearing occupancy filters.
+                </p>
+                <Button
+                  onClick={() => handleFilter({})}
+                  className="bg-violet-600 hover:bg-violet-700 text-white text-xs"
+                >
+                  Reset All Filters
+                </Button>
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredProperties.slice(0, visibleProperties).map((property, index) => (
-                    <div 
-                      key={property.id} 
-                      className="animate-fade-in" 
-                      style={{ animationDelay: `${0.1 * (index % 6)}s` }}
+                    <div
+                      key={property.id}
+                      className="animate-fade-in"
+                      style={{ animationDelay: `${0.05 * (index % 6)}s` }}
                     >
                       <PropertyCard property={property} />
                     </div>
                   ))}
                 </div>
-                
-                {/* Load More Button */}
+
                 {visibleProperties < filteredProperties.length && (
                   <div className="text-center mt-12">
-                    <Button 
+                    <Button
                       onClick={loadMoreProperties}
-                      className="bg-purple hover:bg-purple-dark"
+                      className="bg-slate-900 hover:bg-slate-800 text-white text-xs px-6 h-10 font-medium rounded-xl shadow-sm"
                     >
-                      Load More Properties
+                      Load More Accommodations
                     </Button>
                   </div>
                 )}
@@ -99,7 +120,10 @@ const PropertiesPage: React.FC = () => {
           </div>
         </div>
       </main>
-      
+
+      {/* Floating comparison drawer if any property selected */}
+      <CompareFloatingBar />
+
       <FooterSection />
     </div>
   );

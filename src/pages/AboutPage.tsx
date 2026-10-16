@@ -1,164 +1,83 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React from "react";
+import HeaderSection from "../components/HeaderSection";
+import FooterSection from "../components/FooterSection";
+import { ShieldCheck, HeartHandshake, Lock, Scale, Building2, Users } from "lucide-react";
 
-const AboutPage = () => {
-  const fadeInUp = {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.6 }
-  };
-
-  const staggerChildren = {
-    animate: {
-      transition: {
-        staggerChildren: 0.2
-      }
-    }
-  };
-
+export const AboutPage: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-purple-50 to-white py-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
-      <motion.div 
-        className="max-w-7xl mx-auto"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-      >
-        <motion.div 
-          className="text-center"
-          variants={fadeInUp}
-          initial="initial"
-          animate="animate"
-        >
-          <h1 className="text-5xl font-bold text-purple-800 mb-8 hover:scale-105 transition-transform duration-300 ease-in-out animate-pulse">
-            About Realty Alchemy
-          </h1>
-          <motion.div 
-            className="bg-purple-50 shadow-xl rounded-lg overflow-hidden backdrop-blur-sm hover:shadow-2xl transition-all duration-500"
-            whileHover={{ scale: 1.01 }}
-            transition={{ type: "spring", stiffness: 300 }}
-          >
-            <div className="p-8">
-              <motion.div 
-                className="grid grid-cols-1 md:grid-cols-2 gap-8"
-                variants={staggerChildren}
-                initial="initial"
-                animate="animate"
-              >
-                <motion.div 
-                  className="space-y-6 transform hover:-translate-y-1 transition-transform duration-300"
-                  variants={fadeInUp}
-                >
-                  <h2 className="text-2xl font-semibold text-purple-700 hover:text-purple-900 transition-colors duration-300">
-                    Our Mission
-                  </h2>
-                  <p className="text-purple-600 hover:text-purple-800 transition-colors duration-300 leading-relaxed">
-                    At Realty Alchemy, we transform the real estate experience through innovative technology 
-                    and exceptional service. We believe in making property transactions seamless, transparent, 
-                    and accessible to everyone.
-                  </p>
-                  
-                  <h2 className="text-2xl font-semibold text-purple-700 hover:text-purple-900 transition-colors duration-300 mt-8">
-                    Our Vision
-                  </h2>
-                  <p className="text-purple-600 hover:text-purple-800 transition-colors duration-300 leading-relaxed">
-                    To be the leading digital platform that revolutionizes how people buy, sell, and manage 
-                    real estate, creating value for all stakeholders in the property ecosystem.
-                  </p>
-                </motion.div>
-                
-                <motion.div 
-                  className="space-y-6"
-                  variants={fadeInUp}
-                >
-                  <h2 className="text-2xl font-semibold text-purple-700 hover:text-purple-900 transition-colors duration-300">
-                    Why Choose Us
-                  </h2>
-                  <motion.ul 
-                    className="space-y-4"
-                    variants={staggerChildren}
-                  >
-                    {[
-                      'Cutting-edge property technology',
-                      'Transparent and secure transactions',
-                      'Expert market insights',
-                      'Personalized service',
-                      'Comprehensive property solutions'
-                    ].map((item, index) => (
-                      <motion.li 
-                        key={index} 
-                        className="flex items-center text-purple-600 hover:text-purple-800 transition-all duration-300 transform hover:translate-x-2"
-                        variants={fadeInUp}
-                        whileHover={{ scale: 1.05 }}
-                      >
-                        <svg 
-                          className="h-5 w-5 text-purple-500 mr-2 animate-bounce" 
-                          fill="none" 
-                          strokeLinecap="round" 
-                          strokeLinejoin="round" 
-                          strokeWidth="2" 
-                          viewBox="0 0 24 24" 
-                          stroke="currentColor"
-                        >
-                          <path d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        {item}
-                      </motion.li>
-                    ))}
-                  </motion.ul>
-                </motion.div>
+    <div className="min-h-screen bg-slate-50 flex flex-col">
+      <HeaderSection />
 
-              </motion.div>
-
-              <motion.div 
-                className="mt-12 border-t border-purple-200 pt-8"
-                variants={fadeInUp}
-              >
-                <h2 className="text-2xl font-semibold text-purple-700 hover:text-purple-900 transition-colors duration-300 mb-4">
-                  Our Values
-                </h2>
-                <motion.div 
-                  className="grid grid-cols-1 md:grid-cols-3 gap-6"
-                  variants={staggerChildren}
-                >
-                  {[
-                    {
-                      title: 'Innovation',
-                      description: 'Continuously pushing boundaries in real estate technology',
-                      icon: '🚀'
-                    },
-                    {
-                      title: 'Integrity',
-                      description: 'Maintaining highest standards of honesty and transparency',
-                      icon: '🎯'
-                    },
-                    {
-                      title: 'Excellence',
-                      description: 'Delivering exceptional service in every interaction',
-                      icon: '✨'
-                    }
-                  ].map((value, index) => (
-                    <motion.div 
-                      key={index} 
-                      className="group bg-purple-100 p-6 rounded-lg hover:bg-purple-200 transition-all duration-500 hover:shadow-xl transform hover:-translate-y-2"
-                      variants={fadeInUp}
-                      whileHover={{ scale: 1.05 }}
-                    >
-                      <span className="text-4xl mb-4 block animate-bounce">{value.icon}</span>
-                      <h3 className="text-xl font-semibold text-purple-700 group-hover:text-purple-900 transition-colors duration-300 mb-2">
-                        {value.title}
-                      </h3>
-                      <p className="text-purple-600 group-hover:text-purple-800 transition-colors duration-300">
-                        {value.description}
-                      </p>
-                    </motion.div>
-                  ))}
-                </motion.div>
-              </motion.div>
+      <main className="flex-grow pt-24 pb-16">
+        <div className="container mx-auto px-4 max-w-4xl space-y-12">
+          {/* Header */}
+          <div className="text-center max-w-2xl mx-auto space-y-3">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-100 text-violet-800 text-xs font-semibold uppercase tracking-wider">
+              <Building2 className="w-3.5 h-3.5 text-violet-600" /> About RentRight
             </div>
-          </motion.div>
-        </motion.div>
-      </motion.div>
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+              Transparent Accommodation for Students & Working Professionals
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              Addressing HackVision Problem Statement A3: Helping students and young professionals discover accommodation, compare options, contact landlords safely, and manage transparent leases.
+            </p>
+          </div>
+
+          {/* Pillars Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2">
+              <div className="w-10 h-10 rounded-xl bg-violet-100 text-violet-700 flex items-center justify-center mb-3">
+                <Lock className="w-5 h-5" />
+              </div>
+              <h3 className="font-bold text-sm text-slate-900">Spam-Free Enquiry System</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                We never broadcast tenant phone numbers to open broker databases. All inquiries are double-blind until you choose to authorize contact sharing.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2">
+              <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-3">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <h3 className="font-bold text-sm text-slate-900">Verified vs Claimed Badges</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                RentRight separates physically audited student hostels from owner-claimed listings, ensuring complete visibility into water pressure, sub-meter rates, and wifi speeds.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2">
+              <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center mb-3">
+                <HeartHandshake className="w-5 h-5" />
+              </div>
+              <h3 className="font-bold text-sm text-slate-900">Strict Non-Discrimination</h3>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Zero arbitrary housing denials based on religion, caste, marital status, food preferences, or gender. Every seeker is treated with dignity and equal tenancy access.
+              </p>
+            </div>
+          </div>
+
+          {/* Core Problem We Solve */}
+          <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+            <h2 className="text-xl font-bold text-slate-900">Why RentRight Exists</h2>
+            <div className="space-y-3 text-xs sm:text-sm text-slate-600 leading-relaxed">
+              <p>
+                Finding rental accommodation in major university and IT corridors like Bengaluru, Delhi NCR, and Pune is plagued by hidden broker fees, fake photo listings, intrusive landlord questions, and endless spam calls after registering on legacy portals.
+              </p>
+              <p>
+                <strong>RentRight</strong> replaces opacity with structure:
+              </p>
+              <ul className="list-disc list-inside space-y-2 text-slate-800 font-medium pl-2">
+                <li>30% Affordability Calculator ensures students never over-commit on housing.</li>
+                <li>Side-by-side comparison matrix lets you evaluate deposits, mess meals, and curfew rules.</li>
+                <li>On-site inspection checklist empowers seekers to catch plumbing and sub-meter issues before handing over cash.</li>
+                <li>Owner dashboard equips genuine landlords to manage vacancies and respond to verified inquiries transparently.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <FooterSection />
     </div>
   );
 };

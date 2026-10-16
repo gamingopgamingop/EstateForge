@@ -17,7 +17,7 @@ const ChatBot: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: 'Hello! I\'m your AI-powered real estate assistant. I can help with property information, market trends, buying advice, and more. How can I assist you today?',
+      text: 'Hello! I\'m your RentRight Assistant. I can help you find student PGs, calculate your 30% rent affordability budget, answer questions about security deposits, or schedule property viewings. How can I assist you today?',
       sender: 'bot',
       timestamp: new Date()
     }
@@ -141,8 +141,8 @@ const ChatBot: React.FC = () => {
             </div>
           )}
           {/* Chat header */}
-          <div className="bg-purple-600 text-white p-3 font-medium flex justify-between items-center">
-            <span>EstateForge Assistant</span>
+          <div className="bg-violet-600 text-white p-3 font-medium flex justify-between items-center">
+            <span className="font-bold text-sm">RentRight Rental Assistant</span>
             <Button 
               variant="ghost" 
               size="sm" 
