@@ -4,7 +4,25 @@ import FooterSection from "../components/FooterSection";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, Sparkles, HeartHandshake, CheckCircle2, MessageSquare, ArrowRight, ShieldCheck } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Users,
+  Sparkles,
+  HeartHandshake,
+  CheckCircle2,
+  MessageSquare,
+  ArrowRight,
+  ShieldCheck,
+  Wine,
+  Eye,
+} from "lucide-react";
 import { toast } from "sonner";
 
 interface FlatmateProfile {
@@ -16,6 +34,7 @@ interface FlatmateProfile {
   budget: string;
   sleepCycle: string;
   diet: string;
+  alcohol: "Non-Alcoholic" | "Social Drinker" | "Regular Drinker";
   cleanliness: string;
   socialVibe: string;
   bio: string;
@@ -32,6 +51,7 @@ const SAMPLE_FLATMATES: FlatmateProfile[] = [
     budget: "₹14,000 - ₹18,000",
     sleepCycle: "Night Owl (1 AM - 8:30 AM)",
     diet: "Non-Vegetarian",
+    alcohol: "Social Drinker",
     cleanliness: "Organized & Clean",
     socialVibe: "Occasional Friends on Weekends",
     bio: "Looking for a flatmate in a 3BHK flat in HSR. I cook North Indian food on weekends and love gaming on PS5. Very respectful of quiet hours on weekdays.",
@@ -46,6 +66,7 @@ const SAMPLE_FLATMATES: FlatmateProfile[] = [
     budget: "₹10,000 - ₹14,000",
     sleepCycle: "Early Riser (6:30 AM - 11 PM)",
     diet: "Vegetarian",
+    alcohol: "Non-Alcoholic",
     cleanliness: "Very Particular & Minimalist",
     socialVibe: "Quiet Sanctuary & Study Mode",
     bio: "Prepping for thesis and research. Need a peaceful PG/flat sharing environment with someone who values quiet evenings and keeps common spaces neat.",
@@ -60,6 +81,7 @@ const SAMPLE_FLATMATES: FlatmateProfile[] = [
     budget: "₹16,000 - ₹20,000",
     sleepCycle: "Night Owl (12:30 AM - 8 AM)",
     diet: "Any / Foodie",
+    alcohol: "Regular Drinker",
     cleanliness: "Moderate",
     socialVibe: "Social & Creative",
     bio: "We have 1 master bedroom available in our spacious 3BHK duplex in Indiranagar. Big terrace garden, high speed WiFi, and great filter coffee setup.",
@@ -72,10 +94,13 @@ export const RoommateMatcherPage: React.FC = () => {
   const [sleepHabit, setSleepHabit] = useState("Night Owl");
   const [dietHabit, setDietHabit] = useState("Any");
   const [workMode, setWorkMode] = useState("Hybrid");
+  const [alcoholPref, setAlcoholPref] = useState<FlatmateProfile["alcohol"]>("Non-Alcoholic");
   const [cleanliness, setCleanliness] = useState("High");
   const [socialVibe, setSocialVibe] = useState("Moderate");
   const [acUsage, setAcUsage] = useState("Split Evenly");
   const [matched, setMatched] = useState(false);
+  const [mutualViewProfile, setMutualViewProfile] = useState<FlatmateProfile | null>(null);
+  const [requestSentTo, setRequestSentTo] = useState<number | null>(null);
 
   const handleComputeMatch = () => {
     setMatched(true);
@@ -87,7 +112,29 @@ export const RoommateMatcherPage: React.FC = () => {
     if (profile.sleepCycle.includes(sleepHabit)) score += 10;
     if (dietHabit === "Any" || profile.diet.includes(dietHabit)) score += 8;
     if (cleanliness === "High" && profile.cleanliness.includes("Organized")) score += 6;
-    return Math.min(score, 98);
+    // Alcohol compatibility: exact match bonus, strict clash penalty
+    if (profile.alcohol === alcoholPref) score += 10;
+    else if (alcoholPref === "Non-Alcoholic" && profile.alcohol === "Regular Drinker") score -= 18;
+    else if (alcoholPref === "Non-Alcoholic" && profile.alcohol === "Social Drinker") score -= 8;
+    else if (alcoholPref === "Regular Drinker" && profile.alcohol === "Non-Alcoholic") score -= 10;
+    return Math.max(35, Math.min(score, 98));
+  };
+
+  const alcoholBadgeStyle = (alcohol: FlatmateProfile["alcohol"]) =>
+    alcohol === "Non-Alcoholic"
+      ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+      : alcohol === "Social Drinker"
+      ? "bg-amber-50 text-amber-700 border-amber-200"
+      : "bg-rose-50 text-rose-700 border-rose-200";
+
+  const myProfileSummary = {
+    sleepCycle: sleepHabit,
+    workMode,
+    diet: dietHabit === "Vegetarian" ? "Vegetarian" : dietHabit === "Eggetarian" ? "Eggetarian" : "Any / Non-Veg",
+    alcohol: alcoholPref,
+    cleanliness,
+    socialVibe,
+    acUsage,
   };
 
   return (
@@ -104,7 +151,7 @@ export const RoommateMatcherPage: React.FC = () => {
               Roommate Compatibility Matcher
             </h1>
             <p className="text-slate-600 mt-2 text-sm sm:text-base">
-              Take the 6-factor co-living lifestyle quiz to avoid flatmate friction before sharing a roof.
+              Take the 7-factor co-living lifestyle quiz to avoid flatmate friction before sharing a roof.
             </p>
           </div>
 
@@ -117,7 +164,7 @@ export const RoommateMatcherPage: React.FC = () => {
                     <Sparkles className="w-4 h-4 text-violet-600" /> Lifestyle Preferences
                   </CardTitle>
                   <CardDescription className="text-xs">
-                    Answer these 6 core parameters to discover your ideal flatmate archetype.
+                    Answer these 7 core parameters to discover your ideal flatmate archetype.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4 text-xs">
@@ -184,9 +231,31 @@ export const RoommateMatcherPage: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* 4. Cleanliness Standard */}
+                  {/* 4. Alcohol Preference */}
                   <div>
-                    <label className="font-semibold text-slate-800 block mb-1.5">4. Cleanliness & Tidiness Standard</label>
+                    <label className="font-semibold text-slate-800 block mb-1.5">4. Alcohol Preference</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {(["Non-Alcoholic", "Social Drinker", "Regular Drinker"] as const).map((opt) => (
+                        <button
+                          key={opt}
+                          type="button"
+                          onClick={() => setAlcoholPref(opt)}
+                          className={`p-2 rounded-lg border text-center transition flex items-center justify-center gap-1 ${
+                            alcoholPref === opt
+                              ? "border-violet-600 bg-violet-50 text-violet-900 font-semibold"
+                              : "border-slate-200 hover:bg-slate-50 text-slate-700"
+                          }`}
+                        >
+                          {opt === "Non-Alcoholic" ? <ShieldCheck className="w-3 h-3" /> : <Wine className="w-3 h-3" />}
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 5. Cleanliness Standard */}
+                  <div>
+                    <label className="font-semibold text-slate-800 block mb-1.5">5. Cleanliness & Tidiness Standard</label>
                     <div className="grid grid-cols-3 gap-2">
                       {["High (Spotless)", "Moderate (Weekly)", "Relaxed"].map((opt) => (
                         <button
@@ -205,9 +274,9 @@ export const RoommateMatcherPage: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* 5. Social Vibe */}
+                  {/* 6. Social Vibe */}
                   <div>
-                    <label className="font-semibold text-slate-800 block mb-1.5">5. Guests & Social Vibe</label>
+                    <label className="font-semibold text-slate-800 block mb-1.5">6. Guests & Social Vibe</label>
                     <div className="grid grid-cols-3 gap-2">
                       {["Quiet Sanctuary", "Occasional Guests", "Social & Gatherings"].map((opt) => (
                         <button
@@ -226,9 +295,9 @@ export const RoommateMatcherPage: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* 6. AC & Electricity Split */}
+                  {/* 7. AC & Electricity Split */}
                   <div>
-                    <label className="font-semibold text-slate-800 block mb-1.5">6. AC & Electricity Cost Preference</label>
+                    <label className="font-semibold text-slate-800 block mb-1.5">7. AC & Electricity Cost Preference</label>
                     <div className="grid grid-cols-2 gap-2">
                       {["Split Evenly & Run Freely", "Eco / Individual Sub-Meter"].map((opt) => (
                         <button
@@ -293,6 +362,19 @@ export const RoommateMatcherPage: React.FC = () => {
                         </div>
                       </div>
 
+                      <div className="flex flex-wrap gap-1.5">
+                        <Badge variant="outline" className={`text-[10px] font-semibold gap-1 ${alcoholBadgeStyle(profile.alcohol)}`}>
+                          {profile.alcohol === "Non-Alcoholic" ? <ShieldCheck className="w-3 h-3" /> : <Wine className="w-3 h-3" />}
+                          {profile.alcohol}
+                        </Badge>
+                        <Badge variant="outline" className="text-[10px] font-semibold gap-1 bg-slate-50 text-slate-700 border-slate-200">
+                          🍽 {profile.diet}
+                        </Badge>
+                        <Badge variant="outline" className="text-[10px] font-semibold gap-1 bg-slate-50 text-slate-700 border-slate-200">
+                          🧹 {profile.cleanliness}
+                        </Badge>
+                      </div>
+
                       <p className="text-xs text-slate-600 leading-relaxed italic bg-slate-50 p-2.5 rounded-lg border border-slate-100">
                         "{profile.bio}"
                       </p>
@@ -308,17 +390,31 @@ export const RoommateMatcherPage: React.FC = () => {
                         </div>
                       </div>
 
-                      <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                      <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
                         <span className="text-[11px] text-slate-500">
                           Seeking: {profile.lookingFor}
                         </span>
-                        <Button
-                          size="sm"
-                          onClick={() => toast.success(`Connection request transmitted to ${profile.name}!`)}
-                          className="bg-slate-900 hover:bg-slate-800 text-white text-xs h-7 px-3"
-                        >
-                          Connect
-                        </Button>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setMutualViewProfile(profile)}
+                            className="text-xs h-7 px-2.5 border-violet-200 text-violet-700 hover:bg-violet-50"
+                          >
+                            <Eye className="w-3.5 h-3.5 mr-1" /> Mutual View
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={() => {
+                              setRequestSentTo(profile.id);
+                              toast.success(`Connection request transmitted to ${profile.name}! Your profile is now visible to them.`);
+                            }}
+                            disabled={requestSentTo === profile.id}
+                            className="bg-slate-900 hover:bg-slate-800 text-white text-xs h-7 px-3"
+                          >
+                            {requestSentTo === profile.id ? "Request Sent" : "Connect"}
+                          </Button>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
@@ -328,6 +424,109 @@ export const RoommateMatcherPage: React.FC = () => {
           </div>
         </div>
       </main>
+
+      {/* Mutual Profile View Dialog */}
+      <Dialog open={!!mutualViewProfile} onOpenChange={(open) => !open && setMutualViewProfile(null)}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          {mutualViewProfile && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-base">
+                  <Eye className="w-4 h-4 text-violet-600" /> Mutual Profile View — You See Each Other
+                </DialogTitle>
+                <DialogDescription className="text-xs">
+                  Once a connection request is exchanged, both flatmates can see each other's full lifestyle
+                  profile. Here's how your quiz answers compare with {mutualViewProfile.name}'s.
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                {/* Their side */}
+                <div className="rounded-lg border border-slate-200 p-3 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <img
+                      src={mutualViewProfile.avatar}
+                      alt={mutualViewProfile.name}
+                      className="w-9 h-9 rounded-full object-cover border border-slate-200"
+                    />
+                    <div>
+                      <h4 className="font-bold text-slate-900">{mutualViewProfile.name}</h4>
+                      <p className="text-[10px] text-slate-500">{mutualViewProfile.role}</p>
+                    </div>
+                  </div>
+                  <p className="text-[11px] text-slate-500">📍 {mutualViewProfile.locality} • 💰 {mutualViewProfile.budget}</p>
+                  <div className="space-y-1.5 pt-1 border-t border-slate-100">
+                    <div><span className="text-slate-400 block text-[10px]">Sleep Schedule:</span><span className="font-medium">{mutualViewProfile.sleepCycle}</span></div>
+                    <div><span className="text-slate-400 block text-[10px]">Diet:</span><span className="font-medium">{mutualViewProfile.diet}</span></div>
+                    <div>
+                      <span className="text-slate-400 block text-[10px]">Alcohol:</span>
+                      <Badge variant="outline" className={`text-[10px] font-semibold gap-1 ${alcoholBadgeStyle(mutualViewProfile.alcohol)}`}>
+                        {mutualViewProfile.alcohol === "Non-Alcoholic" ? <ShieldCheck className="w-3 h-3" /> : <Wine className="w-3 h-3" />}
+                        {mutualViewProfile.alcohol}
+                      </Badge>
+                    </div>
+                    <div><span className="text-slate-400 block text-[10px]">Cleanliness:</span><span className="font-medium">{mutualViewProfile.cleanliness}</span></div>
+                    <div><span className="text-slate-400 block text-[10px]">Social Vibe:</span><span className="font-medium">{mutualViewProfile.socialVibe}</span></div>
+                    <div><span className="text-slate-400 block text-[10px]">Seeking:</span><span className="font-medium">{mutualViewProfile.lookingFor}</span></div>
+                  </div>
+                </div>
+
+                {/* Your side (what they see of you) */}
+                <div className="rounded-lg border border-violet-200 bg-violet-50/40 p-3 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-9 h-9 rounded-full bg-violet-600 text-white flex items-center justify-center font-bold text-sm">You</div>
+                    <div>
+                      <h4 className="font-bold text-slate-900">Your Profile</h4>
+                      <p className="text-[10px] text-slate-500">Visible to {mutualViewProfile.name} after you connect</p>
+                    </div>
+                  </div>
+                  <div className="space-y-1.5 pt-1 border-t border-violet-100">
+                    <div><span className="text-slate-400 block text-[10px]">Sleep Schedule:</span><span className="font-medium">{myProfileSummary.sleepCycle}</span></div>
+                    <div><span className="text-slate-400 block text-[10px]">Work Mode:</span><span className="font-medium">{myProfileSummary.workMode}</span></div>
+                    <div><span className="text-slate-400 block text-[10px]">Diet:</span><span className="font-medium">{myProfileSummary.diet}</span></div>
+                    <div>
+                      <span className="text-slate-400 block text-[10px]">Alcohol:</span>
+                      <Badge variant="outline" className={`text-[10px] font-semibold gap-1 ${alcoholBadgeStyle(myProfileSummary.alcohol)}`}>
+                        {myProfileSummary.alcohol === "Non-Alcoholic" ? <ShieldCheck className="w-3 h-3" /> : <Wine className="w-3 h-3" />}
+                        {myProfileSummary.alcohol}
+                      </Badge>
+                    </div>
+                    <div><span className="text-slate-400 block text-[10px]">Cleanliness:</span><span className="font-medium">{myProfileSummary.cleanliness}</span></div>
+                    <div><span className="text-slate-400 block text-[10px]">Social Vibe:</span><span className="font-medium">{myProfileSummary.socialVibe}</span></div>
+                    <div><span className="text-slate-400 block text-[10px]">Utilities:</span><span className="font-medium">{myProfileSummary.acUsage}</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-lg bg-slate-50 border border-slate-200 p-2.5 text-[11px] text-slate-600 flex items-start gap-2">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                Privacy-first: full names and contact details stay hidden. Phone numbers are only shared via the
+                Safe Contact system after both flatmates accept each other.
+              </div>
+
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => setMutualViewProfile(null)}
+                  className="text-xs"
+                >
+                  Close
+                </Button>
+                <Button
+                  onClick={() => {
+                    setRequestSentTo(mutualViewProfile.id);
+                    toast.success(`Mutual profile exchange initiated with ${mutualViewProfile.name}! Both profiles are now visible.`);
+                    setMutualViewProfile(null);
+                  }}
+                  className="bg-violet-600 hover:bg-violet-700 text-white text-xs"
+                >
+                  <HeartHandshake className="w-3.5 h-3.5 mr-1.5" /> Request Mutual Connect
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
 
       <FooterSection />
     </div>

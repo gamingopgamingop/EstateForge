@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Property, useProperties } from "../contexts/PropertiesContext";
 import { Badge } from "@/components/ui/badge";
-import { Star, ShieldCheck, Heart, Scale, MapPin, Calendar, Check, Zap, FileCheck } from "lucide-react";
+import { Star, ShieldCheck, Heart, Scale, MapPin, Calendar, Check, Zap, FileCheck, AlertOctagon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import {
   Tooltip,
   TooltipContent,
@@ -17,11 +18,21 @@ interface PropertyCardProps {
 
 export const PropertyCard: React.FC<PropertyCardProps> = ({ property, featured = false }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const { isComparing, addToCompare, isSaved, toggleSaveProperty } = useProperties();
+  const { isComparing, addToCompare, isSaved, toggleSaveProperty, reportProperty } = useProperties();
 
   const comparing = isComparing(property.id);
   const saved = isSaved(property.id);
   const isAvailable = property.listingStatus === "Available";
+
+  // Expiry Auto-Downgrade detection
+  const ageDays = Math.floor((Date.now() - new Date(property.listedDate).getTime()) / 86400000);
+  const isStale = ageDays > Math.max(30, property.expiryDays - 15);
+
+  const handleReportOutdated = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    reportProperty(property.id, "Listing Might Be Outdated", `Seeker flagged this listing as potentially expired after ${ageDays} days of inactivity.`);
+  };
 
   const handleImageNav = (direction: "next" | "prev", e: React.MouseEvent) => {
     e.preventDefault();
@@ -223,6 +234,19 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({ property, featured =
           </Button>
         </Link>
       </div>
+
+      {/* Expiry Auto-Downgrade banner */}
+      {isStale && (
+        <div className="mx-4 mb-3 p-2 rounded-lg bg-amber-50 border border-amber-300 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5 text-[11px] text-amber-900">
+            <AlertOctagon className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+            <span>Active {ageDays}d ago – <strong>might be outdated</strong></span>
+          </div>
+          <Button size="sm" variant="ghost" onClick={handleReportOutdated} className="h-6 text-[10px] px-2 text-amber-800 hover:bg-amber-100 font-bold">
+            Report
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

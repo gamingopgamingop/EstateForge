@@ -118,6 +118,41 @@ export type ListingReport = {
   status: "pending_review" | "resolved";
 };
 
+export type TenantReview = {
+  id: string;
+  propertyId: number;
+  tenantName: string;
+  tenantEmail?: string;
+  rating: number; // 1-5
+  depositReturned: "Full" | "Partial" | "Not Yet" | "Refused";
+  dimensions: {
+    cleanliness: number;
+    safety: number;
+    ownerBehavior: number;
+    valueForMoney: number;
+  };
+  title: string;
+  comment: string;
+  movedOut: string; // YYYY-MM
+  createdAt: string;
+  helpfulCount: number;
+};
+
+export type MaintenanceTicket = {
+  id: string;
+  propertyId: number;
+  tenantName: string;
+  category: "Plumbing" | "Electrical" | "Appliance" | "Structural" | "Pest Control" | "Security" | "Other";
+  priority: "low" | "medium" | "high" | "urgent";
+  title: string;
+  details: string;
+  photoUrl?: string;
+  status: "open" | "acknowledged" | "in_progress" | "resolved";
+  createdAt: string;
+  updatedAt: string;
+  ownerNote?: string;
+};
+
 export type FilterParams = {
   locality?: string;
   city?: string;
@@ -172,6 +207,16 @@ type PropertiesContextType = {
   // Reports
   reports: ListingReport[];
   reportProperty: (propertyId: number, reason: string, details: string, email?: string) => string;
+  // Tenant reviews
+  reviews: TenantReview[];
+  addReview: (r: Omit<TenantReview, "id" | "createdAt" | "helpfulCount">) => string;
+  getReviewsForProperty: (propertyId: number) => TenantReview[];
+  markReviewHelpful: (id: string) => void;
+  // Maintenance tickets
+  tickets: MaintenanceTicket[];
+  addTicket: (t: Omit<MaintenanceTicket, "id" | "createdAt" | "updatedAt" | "status">) => string;
+  updateTicketStatus: (id: string, status: MaintenanceTicket["status"], ownerNote?: string) => void;
+  getTicketsForProperty: (propertyId: number) => MaintenanceTicket[];
   // Owner management
   addNewListing: (propertyData: Partial<Property>) => Property;
   updatePropertyStatus: (propertyId: number, status: ListingStatus) => void;
@@ -307,6 +352,64 @@ export const PropertiesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     return saved ? JSON.parse(saved) : [];
   });
 
+  // Tenant reviews
+  const [reviews, setReviews] = useState<TenantReview[]>(() => {
+    const saved = localStorage.getItem("rentright_reviews");
+    if (saved) { try { return JSON.parse(saved); } catch {}
+    }
+    return [
+      {
+        id: "REV-9001",
+        propertyId: 1,
+        tenantName: "Aditya Sharma",
+        tenantEmail: "aditya@example.com",
+        rating: 5,
+        depositReturned: "Full",
+        dimensions: { cleanliness: 5, safety: 5, ownerBehavior: 5, valueForMoney: 4 },
+        title: "Owner refunded full deposit within 12 days",
+        comment: "Stayed 11 months. WiFi was solid, no dampness, and Priya ma'am resolved plumbing issues within 24 hours. Zero deductions from ₹30,000 deposit.",
+        movedOut: "2026-08",
+        createdAt: "2026-09-05",
+        helpfulCount: 24,
+      },
+      {
+        id: "REV-9002",
+        propertyId: 2,
+        tenantName: "Meera Krishnan",
+        tenantEmail: "meera@example.com",
+        rating: 4,
+        depositReturned: "Partial",
+        dimensions: { cleanliness: 4, safety: 5, ownerBehavior: 4, valueForMoney: 4 },
+        title: "Great flat, minor painting deduction",
+        comment: "Flat itself is beautiful. Arjun deducted ₹4,500 for repainting which felt slightly high but was documented.",
+        movedOut: "2026-07",
+        createdAt: "2026-08-01",
+        helpfulCount: 12,
+      },
+    ];
+  });
+
+  // Maintenance tickets
+  const [tickets, setTickets] = useState<MaintenanceTicket[]>(() => {
+    const saved = localStorage.getItem("rentright_tickets");
+    if (saved) { try { return JSON.parse(saved); } catch {} }
+    return [
+      {
+        id: "TKT-7001",
+        propertyId: 1,
+        tenantName: "Rahul Verma",
+        category: "Plumbing",
+        priority: "high",
+        title: "Master bedroom geyser leaking",
+        details: "Cold water dripping from the geyser overflow pipe since 3 days. Called the plumber myself, awaiting reimbursement from owner.",
+        status: "in_progress",
+        createdAt: "2026-10-13",
+        updatedAt: "2026-10-14",
+        ownerNote: "Plumber booked for tomorrow 10 AM. Please share invoice for reimbursement."
+      },
+    ];
+  });
+
   // Sync to local storage
   useEffect(() => {
     if (persistProperties(properties)) return;
@@ -346,6 +449,14 @@ export const PropertiesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   useEffect(() => {
     localStorage.setItem("rentright_reports", JSON.stringify(reports));
   }, [reports]);
+
+  useEffect(() => {
+    try { localStorage.setItem("rentright_reviews", JSON.stringify(reviews)); } catch {}
+  }, [reviews]);
+
+  useEffect(() => {
+    try { localStorage.setItem("rentright_tickets", JSON.stringify(tickets)); } catch {}
+  }, [tickets]);
 
   // Check auto-expiry of listings
   const isListingExpired = (p: Property) => {
@@ -447,6 +558,15 @@ export const PropertiesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       } else if (filters.sortBy === "proximity") {
         filtered.sort((a, b) => (a.metroDistanceKm ?? 99) - (b.metroDistanceKm ?? 99));
       }
+
+      // Expiry Auto-Downgrade: push listings older than 30 days to the bottom
+      // so fresh, active inventory always surfaces first. Listings past
+      // expiryDays are considered "stale" and shown last with an "Outdated?"
+      // warning chip in the UI.
+      const DAY_MS = 24 * 60 * 60 * 1000;
+      const ageDays = (p: Property) => Math.floor((Date.now() - new Date(p.listedDate).getTime()) / DAY_MS);
+      const isStale = (p: Property) => ageDays(p) > Math.max(30, p.expiryDays - 15);
+      filtered.sort((a, b) => Number(isStale(b)) - Number(isStale(a)));
 
       setFilteredProperties(filtered);
       setLoading(false);
@@ -712,6 +832,41 @@ export const PropertiesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const featuredProperties = properties.filter(p => p.featured);
 
+  // Tenant reviews API
+  const addReview = (r: Omit<TenantReview, "id" | "createdAt" | "helpfulCount">): string => {
+    const id = `REV-${Math.floor(10000 + Math.random() * 89999)}`;
+    const next: TenantReview = { ...r, id, createdAt: new Date().toISOString().split("T")[0], helpfulCount: 0 };
+    setReviews((prev) => [next, ...prev]);
+    toast.success("Review submitted. Thank you for keeping the community honest!");
+    return id;
+  };
+
+  const getReviewsForProperty = (propertyId: number) =>
+    reviews.filter((r) => r.propertyId === propertyId).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+
+  const markReviewHelpful = (id: string) => {
+    setReviews((prev) => prev.map((r) => (r.id === id ? { ...r, helpfulCount: r.helpfulCount + 1 } : r)));
+    toast.success("Marked helpful");
+  };
+
+  // Maintenance tickets
+  const addTicket = (t: Omit<MaintenanceTicket, "id" | "createdAt" | "updatedAt" | "status">): string => {
+    const id = `TKT-${Math.floor(1000 + Math.random() * 9000)}`;
+    const now = new Date().toISOString().split("T")[0];
+    const next: MaintenanceTicket = { ...t, id, status: "open", createdAt: now, updatedAt: now };
+    setTickets((prev) => [next, ...prev]);
+    toast.success(`Complaint #${id} filed. Owner notified by email and in-app.`);
+    return id;
+  };
+
+  const updateTicketStatus = (id: string, status: MaintenanceTicket["status"], ownerNote?: string) => {
+    setTickets((prev) => prev.map((t) => t.id === id ? { ...t, status, ownerNote: ownerNote ?? t.ownerNote, updatedAt: new Date().toISOString().split("T")[0] } : t));
+    toast.success(`Ticket #${id} marked as ${status.replace("_", " ")}`);
+  };
+
+  const getTicketsForProperty = (propertyId: number) =>
+    tickets.filter((t) => t.propertyId === propertyId).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+
   return (
     <PropertiesContext.Provider
       value={{
@@ -743,6 +898,14 @@ export const PropertiesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         getBookingsForProperty,
         reports,
         reportProperty,
+        reviews,
+        addReview,
+        getReviewsForProperty,
+        markReviewHelpful,
+        tickets,
+        addTicket,
+        updateTicketStatus,
+        getTicketsForProperty,
         addNewListing,
         updatePropertyStatus,
         renewListing,

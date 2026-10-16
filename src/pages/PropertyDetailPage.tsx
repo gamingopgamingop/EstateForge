@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import { useProperties, Property } from "../contexts/PropertiesContext";
+import { useProperties, Property, TenantReview } from "../contexts/PropertiesContext";
 import { useAuth } from "../contexts/AuthContext";
 import HeaderSection from "../components/HeaderSection";
 import FooterSection from "../components/FooterSection";
@@ -42,8 +42,15 @@ import {
   Building2,
   AlertTriangle,
   FileCheck,
-  PhoneOff
+  PhoneOff,
+  MessageSquareQuote,
+  ThumbsUp,
+  Wallet,
+  Plus,
+  ShieldAlert,
 } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
 export const PropertyDetailPage: React.FC = () => {
@@ -54,7 +61,11 @@ export const PropertyDetailPage: React.FC = () => {
     isComparing,
     isSaved,
     toggleSaveProperty,
-    addBooking
+    addBooking,
+    getReviewsForProperty,
+    addReview,
+    markReviewHelpful,
+    reviews
   } = useProperties();
   const { isAuthenticated, user } = useAuth();
 
@@ -70,6 +81,56 @@ export const PropertyDetailPage: React.FC = () => {
   const [visitTimeSlot, setVisitTimeSlot] = useState("11:00 AM");
   const [visitType, setVisitType] = useState<"in-person" | "virtual">("in-person");
   const [visitNotes, setVisitNotes] = useState("");
+
+  // Tenant review state
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [newReview, setNewReview] = useState({
+    tenantName: "",
+    rating: 5,
+    depositReturned: "Full" as TenantReview["depositReturned"],
+    title: "",
+    comment: "",
+    movedOut: "2026-09",
+    cleanliness: 5,
+    safety: 5,
+    ownerBehavior: 5,
+    valueForMoney: 5,
+  });
+
+  const propertyReviews = useMemo(
+    () => (property ? getReviewsForProperty(property.id) : []),
+    [property, reviews, getReviewsForProperty]
+  );
+
+  const avgDimension = (dim: keyof TenantReview["dimensions"]) => {
+    if (propertyReviews.length === 0) return 0;
+    return Math.round((propertyReviews.reduce((s, r) => s + r.dimensions[dim], 0) / propertyReviews.length) * 10) / 10;
+  };
+
+  const submitReview = () => {
+    if (!property) return;
+    if (!newReview.tenantName.trim() || !newReview.title.trim() || !newReview.comment.trim()) {
+      toast.error("Please fill in name, headline, and comment");
+      return;
+    }
+    addReview({
+      propertyId: property.id,
+      tenantName: newReview.tenantName,
+      rating: newReview.rating,
+      depositReturned: newReview.depositReturned,
+      title: newReview.title,
+      comment: newReview.comment,
+      movedOut: newReview.movedOut,
+      dimensions: {
+        cleanliness: newReview.cleanliness,
+        safety: newReview.safety,
+        ownerBehavior: newReview.ownerBehavior,
+        valueForMoney: newReview.valueForMoney,
+      },
+    });
+    setShowReviewForm(false);
+    setNewReview({ ...newReview, tenantName: "", title: "", comment: "" });
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -476,6 +537,125 @@ export const PropertyDetailPage: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* Tenant Reviews Section */}
+          {property && (
+            <div className="mt-8 bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm">
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+                <h2 className="text-lg font-extrabold text-slate-900 flex items-center gap-2">
+                  <MessageSquareQuote className="w-5 h-5 text-violet-600" />
+                  Tenant Reviews & Deposit Refund History
+                  <Badge variant="outline" className="text-[10px] ml-1">{propertyReviews.length} review{propertyReviews.length !== 1 ? "s" : ""}</Badge>
+                </h2>
+                <Button size="sm" onClick={() => setShowReviewForm(!showReviewForm)} className="bg-violet-600 hover:bg-violet-700 text-white text-xs h-8 gap-1">
+                  <Plus className="w-3.5 h-3.5" /> {showReviewForm ? "Close" : "Write Review"}
+                </Button>
+              </div>
+
+              {showReviewForm && (
+                <div className="mb-5 p-4 rounded-xl bg-violet-50 border border-violet-200 space-y-3 animate-fade-in">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <Input placeholder="Your name" value={newReview.tenantName} onChange={(e) => setNewReview({ ...newReview, tenantName: e.target.value })} className="h-8 text-xs" />
+                    <Input type="month" value={newReview.movedOut} onChange={(e) => setNewReview({ ...newReview, movedOut: e.target.value })} className="h-8 text-xs" />
+                    <select value={newReview.depositReturned} onChange={(e) => setNewReview({ ...newReview, depositReturned: e.target.value as any })} className="h-8 rounded-md border border-input bg-white px-2 text-xs">
+                      <option value="Full">Deposit: Full refund</option>
+                      <option value="Partial">Deposit: Partial</option>
+                      <option value="Not Yet">Deposit: Not yet returned</option>
+                      <option value="Refused">Deposit: REFUSED (warning)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] uppercase font-bold text-slate-500 block mb-1">Overall Rating: {newReview.rating}★</label>
+                    <div className="flex gap-1">
+                      {[1,2,3,4,5].map((n) => (
+                        <button key={n} onClick={() => setNewReview({ ...newReview, rating: n })} className="p-1">
+                          <Star className={`w-5 h-5 ${n <= newReview.rating ? "text-amber-500 fill-amber-500" : "text-slate-300"}`} />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {(["cleanliness","safety","ownerBehavior","valueForMoney"] as const).map((dim) => (
+                      <div key={dim}>
+                        <label className="text-[9px] uppercase font-bold text-slate-500 block mb-0.5">{dim.replace(/([A-Z])/g, " $1")}</label>
+                        <select value={newReview[dim]} onChange={(e) => setNewReview({ ...newReview, [dim]: Number(e.target.value) })} className="h-7 rounded-md border border-input bg-white px-1.5 text-[11px] w-full">
+                          {[5,4,3,2,1].map((v) => <option key={v} value={v}>{v}★</option>)}
+                        </select>
+                      </div>
+                    ))}
+                  </div>
+                  <Input placeholder="Review headline (e.g. Owner refunded full deposit in 12 days)" value={newReview.title} onChange={(e) => setNewReview({ ...newReview, title: e.target.value })} className="h-8 text-xs" />
+                  <Textarea rows={3} placeholder="Share your experience - maintenance response, deposit refund, safety, neighbors…" value={newReview.comment} onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })} className="text-xs" />
+                  <div className="flex justify-end">
+                    <Button size="sm" onClick={submitReview} className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-8">Submit Review</Button>
+                  </div>
+                </div>
+              )}
+
+              {propertyReviews.length === 0 ? (
+                <p className="text-xs text-slate-500 italic">No tenant reviews yet. Be the first to review this property after moving out.</p>
+              ) : (
+                <>
+                  {/* Aggregate dimension bars */}
+                  <div className="mb-5 grid grid-cols-2 sm:grid-cols-4 gap-3 text-[10px]">
+                    {(["cleanliness","safety","ownerBehavior","valueForMoney"] as const).map((dim) => {
+                      const val = avgDimension(dim);
+                      return (
+                        <div key={dim} className="p-2 rounded-lg bg-slate-50 border border-slate-100">
+                          <div className="uppercase font-bold text-slate-500 mb-1">{dim.replace(/([A-Z])/g, " $1")}</div>
+                          <div className="flex items-center gap-1.5">
+                            <div className="flex-1 h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                              <div className="h-full bg-violet-600 rounded-full" style={{ width: `${(val / 5) * 100}%` }} />
+                            </div>
+                            <span className="font-black text-slate-800">{val}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="space-y-3">
+                    {propertyReviews.map((r) => (
+                      <div key={r.id} className="p-4 rounded-xl border border-slate-200 bg-slate-50/60">
+                        <div className="flex items-start justify-between gap-2 flex-wrap mb-1.5">
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-full bg-violet-600 text-white grid place-items-center text-xs font-bold">{r.tenantName[0]}</div>
+                            <div>
+                              <div className="font-bold text-xs text-slate-900">{r.tenantName}</div>
+                              <div className="text-[9px] text-slate-500">Moved out {r.movedOut} · {r.createdAt}</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            {[1,2,3,4,5].map((n) => <Star key={n} className={`w-3 h-3 ${n <= r.rating ? "text-amber-500 fill-amber-500" : "text-slate-300"}`} />)}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+                          <Badge variant="outline" className={`text-[9px] ${
+                            r.depositReturned === "Full" ? "text-emerald-700 border-emerald-300 bg-emerald-50" :
+                            r.depositReturned === "Partial" ? "text-amber-700 border-amber-300 bg-amber-50" :
+                            r.depositReturned === "Refused" ? "text-rose-700 border-rose-300 bg-rose-50" :
+                            "text-slate-700 border-slate-300 bg-slate-50"
+                          }`}>
+                            <Wallet className="w-2.5 h-2.5 mr-1" /> Deposit: {r.depositReturned}
+                          </Badge>
+                        </div>
+                        <div className="font-bold text-xs text-slate-900">{r.title}</div>
+                        <p className="text-[11px] text-slate-700 mt-1 leading-relaxed">{r.comment}</p>
+                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-200">
+                          <div className="text-[10px] text-slate-500">
+                            Clean {r.dimensions.cleanliness}★ · Safe {r.dimensions.safety}★ · Owner {r.dimensions.ownerBehavior}★ · Value {r.dimensions.valueForMoney}★
+                          </div>
+                          <Button size="sm" variant="ghost" onClick={() => markReviewHelpful(r.id)} className="h-6 text-[10px] gap-1 text-slate-600 hover:text-violet-700">
+                            <ThumbsUp className="w-3 h-3" /> Helpful ({r.helpfulCount})
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
         </div>
       </main>
 

@@ -4,7 +4,7 @@ import HeaderSection from "../components/HeaderSection";
 import FooterSection from "../components/FooterSection";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Calculator, Users, ClipboardCheck, Navigation, ArrowRight, Sparkles, Scale, ShieldCheck, MapPin } from "lucide-react";
+import { Calculator, Users, ClipboardCheck, Navigation, ArrowRight, Sparkles, Scale, ShieldCheck, MapPin, Wallet, ShieldAlert, Layers, Bot, Mic, Gauge, FileSignature, ShieldAlert as SafetyIcon, Wrench, IndianRupee, Bell, Truck } from "lucide-react";
 
 export const ToolsPage: React.FC = () => {
   const tools = [
@@ -55,6 +55,94 @@ export const ToolsPage: React.FC = () => {
       icon: <MapPin className="w-6 h-6 text-blue-600" />,
       path: "/commute-calculator",
       color: "bg-blue-50 text-blue-700 border-blue-200"
+    },
+    {
+      title: "Split Rent & Expense Manager",
+      badge: "Flatmate Ledger",
+      desc: "Split rent, deposit, electricity, and WiFi bills among 2-6 roommates. Live see who owes whom and settle disputes with an auditable monthly ledger.",
+      icon: <Wallet className="w-6 h-6 text-violet-600" />,
+      path: "/split-rent",
+      color: "bg-violet-50 text-violet-700 border-violet-200"
+    },
+    {
+      title: "Fake Listing Detector",
+      badge: "Fraud Heuristics",
+      desc: "Automated fraud scoring: duplicate images, rent 40% below locality avg, silent owners, unverified claims. Every risky listing surfaced with reason codes.",
+      icon: <ShieldAlert className="w-6 h-6 text-rose-600" />,
+      path: "/fake-detector",
+      color: "bg-rose-50 text-rose-700 border-rose-200"
+    },
+    {
+      title: "Affordability Heatmap",
+      badge: "City Rent Map",
+      desc: "Visualize localities color-coded by average rent. Instantly compare budget-friendly vs premium zones across all listed cities.",
+      icon: <Layers className="w-6 h-6 text-amber-600" />,
+      path: "/heatmap",
+      color: "bg-amber-50 text-amber-700 border-amber-200"
+    },
+    {
+      title: "AI Rent Negotiator",
+      badge: "Data-Backed Drafts",
+      desc: "Generate polite, evidence-rich negotiation messages using locality averages and lock-in sweeteners. Users report 3x higher success rate vs cold calls.",
+      icon: <Bot className="w-6 h-6 text-indigo-600" />,
+      path: "/ai-negotiator",
+      color: "bg-indigo-50 text-indigo-700 border-indigo-200"
+    },
+    {
+      title: "Deposit Trust Score",
+      badge: "Owner Reliability",
+      desc: "Every owner is scored 0-100 on deposit-return reliability using verification proof, rating, and response-time signals. Avoid stubborn landlords before paying.",
+      icon: <Gauge className="w-6 h-6 text-emerald-600" />,
+      path: "/deposit-trust",
+      color: "bg-emerald-50 text-emerald-700 border-emerald-200"
+    },
+    {
+      title: "Rental Agreement Generator",
+      badge: "Legal Tech",
+      desc: "Free 14-clause Indian rent agreement with lawyer-recommended protections: deposit refund guarantee, inspection notice, force-majeure, and jurisdiction clauses.",
+      icon: <FileSignature className="w-6 h-6 text-indigo-600" />,
+      path: "/rent-agreement",
+      color: "bg-indigo-50 text-indigo-700 border-indigo-200"
+    },
+    {
+      title: "Safety Helpline & SOS Panic",
+      badge: "Women & Student Safety",
+      desc: "One-tap 112 dialer with GPS SMS to trusted contacts. Verified local police and women helplines. Silent incident reporting for harassment cases.",
+      icon: <SafetyIcon className="w-6 h-6 text-rose-600" />,
+      path: "/safety-helpline",
+      color: "bg-rose-50 text-rose-700 border-rose-200"
+    },
+    {
+      title: "Maintenance Complaint Tracker",
+      badge: "Renter Empowerment",
+      desc: "Log plumbing, electrical, and appliance issues with photo evidence and timestamps. Creates a legal audit trail that protects your deposit at move-out.",
+      icon: <Wrench className="w-6 h-6 text-blue-600" />,
+      path: "/maintenance",
+      color: "bg-blue-50 text-blue-700 border-blue-200"
+    },
+    {
+      title: "Broker vs No-Broker Calculator",
+      badge: "Anti-Brokerage",
+      desc: "Compare real brokerage costs across 8 Indian cities. See how much you save using RentRight's direct-owner Safe Contact flow instead of paying a middleman.",
+      icon: <IndianRupee className="w-6 h-6 text-amber-600" />,
+      path: "/broker-fee",
+      color: "bg-amber-50 text-amber-700 border-amber-200"
+    },
+    {
+      title: "Moving Cost Estimator",
+      badge: "Relocation Budget",
+      desc: "Packers & movers pricing for PG Room to Villa across 12 cities. Includes distance, floor surcharge, insurance, and cleaning add-ons.",
+      icon: <Truck className="w-6 h-6 text-purple-600" />,
+      path: "/moving-cost",
+      color: "bg-purple-50 text-purple-700 border-purple-200"
+    },
+    {
+      title: "Rent Payment Reminder & Ledger",
+      badge: "Never Miss Rent",
+      desc: "Auto-track monthly bills with due reminders. Timestamped payment history for HRA receipts, disputes, and building deposit-refund evidence.",
+      icon: <Bell className="w-6 h-6 text-violet-600" />,
+      path: "/payment-reminder",
+      color: "bg-violet-50 text-violet-700 border-violet-200"
     }
   ];
 

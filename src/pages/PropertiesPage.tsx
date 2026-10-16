@@ -8,6 +8,9 @@ import { useProperties, FilterParams } from "../contexts/PropertiesContext";
 import { Button } from "@/components/ui/button";
 import { Loader2, Sparkles, Building2, ShieldCheck, Scale, Calculator } from "lucide-react";
 import { Link } from "react-router-dom";
+import VoiceSearchBar from "../components/VoiceSearchBar";
+import { parseVoiceQuery } from "../utils/voiceSearch";
+import { toast } from "sonner";
 
 export const PropertiesPage: React.FC = () => {
   const { filteredProperties, filterProperties, loading } = useProperties();
@@ -48,6 +51,21 @@ export const PropertiesPage: React.FC = () => {
             <p className="text-slate-600 mt-2 text-xs sm:text-sm">
               Filter by budget, locality, private room, or PG twin-sharing with complete rent & deposit breakdown.
             </p>
+          </div>
+
+          {/* Voice Search Bar */}
+          <div className="mb-4 p-3 rounded-xl bg-gradient-to-r from-violet-50 to-blue-50 border border-violet-200">
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles className="w-3.5 h-3.5 text-violet-600" />
+              <span className="text-[10px] uppercase font-bold text-violet-800 tracking-wider">Try Voice Search (Hindi / English)</span>
+            </div>
+            <VoiceSearchBar
+              placeholder="Say: 2 BHK under 15000 Koramangala  ·  या कहें: कोरमंगला में 15000 से कम का मकान"
+              onTranscript={(text) => {
+                handleFilter(parseVoiceQuery(text));
+                toast.success(`Voice query applied: "${text}"`);
+              }}
+            />
           </div>
 
           {/* Filter Bar */}

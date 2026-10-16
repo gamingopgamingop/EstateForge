@@ -3,6 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useProperties } from "../contexts/PropertiesContext";
+import VoiceSearchBar from "./VoiceSearchBar";
+import { parseVoiceQuery } from "../utils/voiceSearch";
+import { toast } from "sonner";
 import {
   Search,
   ShieldCheck,
@@ -27,6 +30,18 @@ export const HeroSection: React.FC = () => {
       accommodationType: type !== "all" ? type : undefined,
       availableOnly: true
     });
+    navigate("/properties");
+  };
+
+  const handleVoiceSearch = (text: string) => {
+    const voiceFilters = parseVoiceQuery(text);
+    filterProperties({
+      ...voiceFilters,
+      locality: voiceFilters.locality || locality.trim() || undefined,
+      accommodationType: voiceFilters.accommodationType || (type !== "all" ? type : undefined),
+      availableOnly: true
+    });
+    toast.success(`Voice search applied: "${text}"`);
     navigate("/properties");
   };
 
@@ -102,6 +117,17 @@ export const HeroSection: React.FC = () => {
               <Search className="w-4 h-4" /> Find Accommodations
             </Button>
           </form>
+
+          {/* Hero Voice Search (Hindi / English) */}
+          <div className="max-w-2xl mx-auto pt-1">
+            <VoiceSearchBar
+              placeholder="🎙 Say: 2 BHK under 15000 Koramangala  ·  या कहें: कोरमंगला में 15000 से कम का मकान"
+              onTranscript={handleVoiceSearch}
+            />
+            <p className="text-[10px] text-slate-400 mt-1.5">
+              Voice search works in Hindi & English — or tap the green phone button to talk to the voice agent.
+            </p>
+          </div>
 
           {/* Direct CTA Buttons */}
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">

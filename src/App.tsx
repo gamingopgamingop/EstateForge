@@ -15,6 +15,17 @@ import RoommateMatcherPage from "./pages/RoommateMatcherPage";
 import InspectionChecklistPage from "./pages/InspectionChecklistPage";
 import LocalityComparePage from "./pages/LocalityComparePage";
 import CommuteCalculatorPage from "./pages/CommuteCalculatorPage";
+import SplitRentManagerPage from "./pages/SplitRentManagerPage";
+import FakeListingDetectorPage from "./pages/FakeListingDetectorPage";
+import AffordabilityHeatmapPage from "./pages/AffordabilityHeatmapPage";
+import AIRentNegotiatorPage from "./pages/AIRentNegotiatorPage";
+import DepositTrustScorePage from "./pages/DepositTrustScorePage";
+import RentAgreementGeneratorPage from "./pages/RentAgreementGeneratorPage";
+import SafetyHelplinePage from "./pages/SafetyHelplinePage";
+import MaintenanceTrackerPage from "./pages/MaintenanceTrackerPage";
+import BrokerFeeCalculatorPage from "./pages/BrokerFeeCalculatorPage";
+import MovingCostEstimatorPage from "./pages/MovingCostEstimatorPage";
+import RentPaymentReminderPage from "./pages/RentPaymentReminderPage";
 import ToolsPage from "./pages/ToolsPage";
 import OwnerEnquiriesPage from "./pages/OwnerEnquiriesPage";
 import Login from "./pages/Login";
@@ -25,6 +36,7 @@ import NotFound from "./pages/NotFound";
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
 import ChatBot from "./components/ChatBot";
+import VoiceCallAgent from "./components/VoiceCallAgent";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +58,17 @@ const App = () => (
               <Route path="/inspection-checklist" element={<InspectionChecklistPage />} />
               <Route path="/locality-compare" element={<LocalityComparePage />} />
               <Route path="/commute-calculator" element={<CommuteCalculatorPage />} />
+              <Route path="/split-rent" element={<SplitRentManagerPage />} />
+              <Route path="/fake-detector" element={<FakeListingDetectorPage />} />
+              <Route path="/heatmap" element={<AffordabilityHeatmapPage />} />
+              <Route path="/ai-negotiator" element={<AIRentNegotiatorPage />} />
+              <Route path="/deposit-trust" element={<DepositTrustScorePage />} />
+              <Route path="/rent-agreement" element={<RentAgreementGeneratorPage />} />
+              <Route path="/safety-helpline" element={<SafetyHelplinePage />} />
+              <Route path="/maintenance" element={<MaintenanceTrackerPage />} />
+              <Route path="/broker-fee" element={<BrokerFeeCalculatorPage />} />
+              <Route path="/moving-cost" element={<MovingCostEstimatorPage />} />
+              <Route path="/payment-reminder" element={<RentPaymentReminderPage />} />
               <Route path="/tools" element={<ToolsPage />} />
               <Route
                 path="/owner/enquiries"
@@ -81,6 +104,8 @@ const App = () => (
             </Routes>
             {/* AI Assistant ChatBot */}
             <ChatBot />
+            {/* Voice Calling Agent — speaks answers from RentRight site data */}
+            <VoiceCallAgent />
           </BrowserRouter>
         </TooltipProvider>
       </PropertiesProvider>
