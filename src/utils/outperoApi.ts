@@ -37,6 +37,45 @@ function validatePhone(phone: string): boolean {
   return /^\+?\d{7,15}$/.test(cleaned);
 }
 
+/**
+ * Pull a human-readable message out of an error body. Outpero (and the proxy)
+ * may return `message`/`error` as a string OR a nested object, and non-JSON
+ * text on gateway errors — so we never feed a raw object into `new Error()`.
+ */
+function readableError(
+  data: Record<string, unknown>,
+  status: number,
+  rawText: string
+): string {
+  const strFields = [
+    data?.message,
+    data?.error,
+    data?.detail,
+    data?.error_description,
+    (data?.error as any)?.message,
+    (data?.message as any)?.message,
+  ];
+  for (const f of strFields) {
+    if (typeof f === "string" && f.trim()) return f.trim();
+  }
+  // Nested object error: serialize it (bounded) so the cause is visible.
+  const errObj = data?.error ?? data?.message ?? data?.detail;
+  if (errObj && typeof errObj === "object") {
+    try {
+      return `Outpero error (HTTP ${status}): ${JSON.stringify(errObj)}`;
+    } catch {
+      /* fall through */
+    }
+  }
+  if (rawText && !rawText.trim().startsWith("<")) {
+    return `Outpero request failed (HTTP ${status}): ${rawText.slice(0, 200)}`;
+  }
+  if (status === 401 || status === 403) {
+    return "Auth failed (HTTP " + status + "). Set a fresh OUTPERO_API_KEY in .env and restart npm run dev.";
+  }
+  return `Outpero request failed (HTTP ${status}).`;
+}
+
 export async function placeOutperoCall(
   params: PlaceCallParams
 ): Promise<OutperoCallResult> {
@@ -77,13 +116,9 @@ export async function placeOutperoCall(
   }
 
   if (!res.ok) {
-    const detail =
-      (data.message as string) ||
-      (data.error as string) ||
-      `Outpero request failed (HTTP ${res.status})`;
     // A 401/403 here almost always means OUTPERO_API_KEY is missing/stale in .env
     // (the proxy couldn't sign the request), since the browser holds no key.
-    throw new Error(detail);
+    throw new Error(readableError(data, res.status, text));
   }
 
   return {

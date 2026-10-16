@@ -54,7 +54,10 @@ export const OutperoCallWidget: React.FC = () => {
       setResult(call);
       toast.success(`AI agent is calling ${phone} (${call.status})`);
     } catch (e: any) {
-      const msg = e?.message || "Could not place the call.";
+      const msg =
+        (e instanceof Error && e.message) ||
+        (typeof e === "string" ? e : "") ||
+        "Could not place the call.";
       setError(msg);
       toast.error(msg);
     } finally {
