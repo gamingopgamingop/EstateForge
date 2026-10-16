@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Phone, PhoneOff, Mic, MicOff, Loader2, Volume2 } from "lucide-react";
 import { generateDualChatReplies, type ChatProvider } from "../utils/chatApi";
 import type { ChatTurn } from "../utils/siteKnowledge";
-import { parseVoiceQuery, isVoiceSearchIntent } from "../utils/voiceSearch";
+import { parseVoiceQuery, isVoiceSearchIntent, voiceErrorHint } from "../utils/voiceSearch";
 import { useProperties } from "../contexts/PropertiesContext";
 import { toast } from "sonner";
 
@@ -53,6 +53,7 @@ export const VoiceCallAgent: React.FC = () => {
   const inCallRef = useRef(false);
   const speakingRef = useRef(false);
   const micPausedRef = useRef(false);
+  const runningRef = useRef(false);
   const turnsRef = useRef<CallTurn[]>([]);
   const langRef = useRef(lang);
   langRef.current = lang;
@@ -78,9 +79,10 @@ export const VoiceCallAgent: React.FC = () => {
 
   const restartListening = () => {
     const rec = recRef.current;
-    if (!rec || !inCallRef.current || speakingRef.current || micPausedRef.current) return;
+    if (!rec || !inCallRef.current || speakingRef.current || micPausedRef.current || runningRef.current) return;
     try {
       setStatus("listening");
+      runningRef.current = true;
       rec.start();
     } catch {
       // already started — ignore
@@ -166,6 +168,13 @@ export const VoiceCallAgent: React.FC = () => {
       toast.error("Voice calling needs Chrome or Edge (Web Speech API not supported here).");
       return;
     }
+    if (!window.isSecureContext && !location.hostname.match(/^localhost$|^127\.|^\[?::1\]?$/)) {
+      toast.error(
+        "Mic requires a secure context. Open this site via http://localhost:8080 (or HTTPS) — LAN IPs over plain http block microphone access.",
+        { duration: 10000 }
+      );
+      return;
+    }
     if (!("speechSynthesis" in window)) {
       toast.error("This browser can't speak replies back. Try Chrome or Edge.");
       return;
@@ -182,21 +191,29 @@ export const VoiceCallAgent: React.FC = () => {
       setPartial(transcript);
       if (event.results[0].isFinal) {
         setPartial("");
+        runningRef.current = false;
         try { rec.stop(); } catch {}
         handleUtterance(transcript);
       }
     };
     rec.onerror = (e: any) => {
-      if (e?.error === "not-allowed" || e?.error === "service-not-allowed") {
-        toast.error("Microphone permission denied. Allow the mic and call again.");
+      const code = e?.error;
+      if (code === "not-allowed" || code === "service-not-allowed") {
+        // Browser hard-blocks all future starts after one denial, so end the call
+        toast.error(voiceErrorHint(code), { duration: 10000 });
+        endCall();
+      } else if (code === "audio-capture") {
+        toast.error(voiceErrorHint(code), { duration: 9000 });
         endCall();
       }
-      // "no-speech" / "aborted" are tolerated — onend restarts the loop
+      // "no-speech" / "aborted" are benign — onend restarts the loop
     };
     rec.onend = () => {
+      runningRef.current = false;
       if (inCallRef.current && !speakingRef.current && !micPausedRef.current) {
         try {
           setStatus("listening");
+          runningRef.current = true;
           rec.start();
         } catch {
           // start() while already starting — safe to ignore
@@ -235,6 +252,7 @@ export const VoiceCallAgent: React.FC = () => {
     if (!rec) return;
     if (!micPausedRef.current) {
       micPausedRef.current = true;
+      runningRef.current = false;
       try { rec.stop(); } catch {}
       setStatus("ended"); // paused — stays in call but stops capturing
       toast("Mic paused. Tap the mic to resume.");

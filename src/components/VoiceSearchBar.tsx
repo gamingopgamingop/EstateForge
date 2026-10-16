@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Mic, MicOff, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { voiceErrorHint } from "../utils/voiceSearch";
 import { toast } from "sonner";
 
 type SpeechRecognitionLike = {
@@ -31,6 +32,7 @@ export const VoiceSearchBar: React.FC<Props> = ({ onTranscript, placeholder, cla
   const [lang, setLang] = useState<"en-IN" | "hi-IN">("en-IN");
   const [partial, setPartial] = useState("");
   const recRef = useRef<SpeechRecognitionLike | null>(null);
+  const startingRef = useRef(false);
 
   useEffect(() => {
     const w = window as any;
@@ -55,10 +57,15 @@ export const VoiceSearchBar: React.FC<Props> = ({ onTranscript, placeholder, cla
       }
     };
     rec.onerror = (e: any) => {
-      toast.error(`Voice error: ${e.error || "unknown"}`);
+      const hint = voiceErrorHint(e?.error);
+      if (hint) toast.error(hint, { duration: 9000 });
       setListening(false);
+      startingRef.current = false;
     };
-    rec.onend = () => setListening(false);
+    rec.onend = () => {
+      setListening(false);
+      startingRef.current = false;
+    };
     recRef.current = rec;
     return () => { try { rec.stop(); } catch {} };
   }, [lang, onTranscript]);
@@ -70,18 +77,23 @@ export const VoiceSearchBar: React.FC<Props> = ({ onTranscript, placeholder, cla
     }
     const rec = recRef.current;
     if (!rec) return;
-    if (listening) {
+    if (listening || startingRef.current) {
+      // start() has already been called and the browser permission prompt
+      // may still be pending — stop instead of double-starting, which
+      // Chrome reports as a spurious "not-allowed" error.
       rec.stop();
       setListening(false);
-    } else {
-      try {
-        rec.lang = lang;
-        rec.start();
-        setListening(true);
-        setPartial("");
-      } catch (e: any) {
-        toast.error("Could not start microphone: " + (e?.message || ""));
-      }
+      return;
+    }
+    try {
+      rec.lang = lang;
+      startingRef.current = true;
+      rec.start();
+      setListening(true);
+      setPartial("");
+    } catch (e: any) {
+      startingRef.current = false;
+      toast.error("Could not start microphone: " + (e?.message || ""));
     }
   };
 
