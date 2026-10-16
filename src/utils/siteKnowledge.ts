@@ -279,7 +279,8 @@ Rules for answering:
 1. Ground your answer in the provided SITE CONTEXT when it is relevant; quote real prices, localities and amenities from it.
 2. Always point users to the exact RentRight page path that helps them next.
 3. If the site context does not cover the question, answer helpfully from general rental advice and say it is not from RentRight data.
-4. Be concise (under 120 words), friendly, and India-relevant (₹ amounts).`;
+4. Be concise (under 120 words), friendly, and India-relevant (₹ amounts).
+5. Reply in plain text only — no markdown formatting, no code blocks.`;
 
 /** Build the RAG prompt (system instructions + retrieved site context + question). */
 export function buildRagPrompt(userInput: string): string {
@@ -292,5 +293,26 @@ ${context}
 USER QUESTION: ${userInput}`;
 }
 
-/** Extract conversation turns for models that support chat history. */
+/** Conversation turn used by both model providers. */
 export type ChatTurn = { role: "user" | "assistant"; content: string };
+
+/**
+ * Normalize a chat log into strictly alternating turns:
+ * - drops empty turns (e.g. the seeded greeting that has no provider)
+ * - merges consecutive turns from the same speaker (we render one bubble
+ *   per model, so a question can produce two assistant turns in a row)
+ * - ensures the history starts with a user turn (required by Gemini)
+ */
+export function normalizeHistory(turns: ChatTurn[], maxTurns = 6): ChatTurn[] {
+  const merged: ChatTurn[] = [];
+  for (const turn of turns) {
+    if (!turn.content?.trim()) continue;
+    const last = merged[merged.length - 1];
+    if (last && last.role === turn.role) last.content += "\n\n" + turn.content;
+    else merged.push({ ...turn });
+  }
+
+  while (merged.length > 0 && merged[0].role !== "user") merged.shift();
+
+  return merged.slice(-maxTurns);
+}

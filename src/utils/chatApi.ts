@@ -16,13 +16,30 @@ export type ChatReply = {
   text: string;
 };
 
+/**
+ * Chat bubbles render plain text, so trim the markdown decoration models
+ * like to emit (**bold**, ### headings, - bullets, [link](url)).
+ */
+function toPlainText(text: string): string {
+  return text
+    .replace(/```[\s\S]*?```/g, "")
+    .replace(/^\s{0,3}#{1,6}\s*/gm, "")
+    .replace(/\*\*(.+?)\*\*/g, "$1")
+    .replace(/\*(.+?)\*/g, "$1")
+    .replace(/`(.+?)`/g, "$1")
+    .replace(/\[(.+?)\]\((.+?)\)/g, "$1 ($2)")
+    .replace(/^\s*[-*]\s+/gm, "• ")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 async function safeGenerate(
   provider: ChatProvider,
   fn: () => Promise<string>
 ): Promise<ChatReply | null> {
   try {
     const text = await fn();
-    return { provider, text };
+    return { provider, text: toPlainText(text) };
   } catch (error) {
     console.warn(`${provider} generation failed:`, error);
     return null;

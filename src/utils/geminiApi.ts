@@ -1,8 +1,12 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { buildRagPrompt, type ChatTurn } from './siteKnowledge';
+import { buildRagPrompt, normalizeHistory, type ChatTurn } from './siteKnowledge';
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(API_KEY || "AIzaSyDummyKey");
+// Model id is configurable; gemini-1.5-flash has been retired by Google
+// (404 NOT_FOUND), so we default to the current stable flash model.
+const GEMINI_MODEL =
+  (import.meta.env.VITE_GEMINI_MODEL as string | undefined) || "gemini-2.5-flash";
 
 // Fallback response engine for RentRight if API key is rate-limited or offline
 // Exported so the offline rule engine can back-stop any provider failure
@@ -36,23 +40,29 @@ export const getOfflineRentRightResponse = (input: string): string => {
   return "Hello! I am your RentRight Assistant. I can help you find student PGs, calculate your 30% affordability limit, guide you through our side-by-side comparison matrix, or explain our non-discrimination fair housing standards. What would you like to explore?";
 };
 
+/**
+ * Gemini requires history to alternate user/model and to start with a
+ * user turn — normalizeHistory guarantees that for us.
+ */
+function toGeminiHistory(history: ChatTurn[]) {
+  return normalizeHistory(history).map((turn) => ({
+    role: turn.role === "user" ? ("user" as const) : ("model" as const),
+    parts: [{ text: turn.content }]
+  }));
+}
+
 export async function generateGeminiResponse(
   userInput: string,
   history: ChatTurn[] = []
 ): Promise<string> {
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
 
     // RAG prompt: RentRight persona + retrieved site pages/listings as context
     const prompt = buildRagPrompt(userInput);
 
     // Replay the last few turns so follow-up questions keep context
-    const chatHistory = history.slice(-6).map((turn) => ({
-      role: turn.role === "user" ? ("user" as const) : ("model" as const),
-      parts: [{ text: turn.content }]
-    }));
-
-    const chat = model.startChat({ history: chatHistory });
+    const chat = model.startChat({ history: toGeminiHistory(history) });
     const result = await chat.sendMessage(prompt);
     return result.response.text();
   } catch (error) {
@@ -65,7 +75,7 @@ export async function generateGeminiResponse(
 
 export async function testGeminiConnection(): Promise<string> {
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
     const result = await model.generateContent('ping');
     return result.response.text();
   } catch (error) {

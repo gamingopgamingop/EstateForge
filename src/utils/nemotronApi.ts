@@ -1,4 +1,4 @@
-import { buildRagPrompt, type ChatTurn } from "./siteKnowledge";
+import { buildRagPrompt, normalizeHistory, type ChatTurn } from "./siteKnowledge";
 
 /**
  * NVIDIA Nemotron chat client (OpenAI-compatible NIM Endpoint API).
@@ -86,7 +86,7 @@ export async function generateNemotronResponse(
 ): Promise<string> {
   const messages = [
     { role: "system", content: buildRagPrompt(userInput) },
-    ...history.slice(-6), // keep the last few turns for context
+    ...normalizeHistory(history), // alternate turns, newest window
     { role: "user", content: userInput }
   ];
   return callNemotron(messages);
