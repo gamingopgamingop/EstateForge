@@ -88,26 +88,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.error("Error reading stored user", e);
       }
     }
-    // Default to Seeker Rahul for immediate seamless preview
-    return DEMO_SEEKER;
+    // No stored session => visitor is anonymous. Public browsing stays
+    // available; protected routes (dashboard / owner portal) require an
+    // explicit sign-in via the RBAC guard.
+    return null;
   });
 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    // Reflect the presence of a session. A stored user means we are
-    // authenticated; otherwise we fall back to the demo seeker below.
+    // Authenticated only when a real session has been persisted.
     return !!localStorage.getItem("rentright_user");
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-
-  // A brand-new visitor is previewed as the demo seeker, so keep the
-  // auth flag consistent with the seeded user on first load.
-  useEffect(() => {
-    if (!localStorage.getItem("rentright_user") && user) {
-      setIsAuthenticated(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // Sync to localStorage
   useEffect(() => {

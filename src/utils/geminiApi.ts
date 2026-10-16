@@ -1,10 +1,12 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { buildRagPrompt, type ChatTurn } from './siteKnowledge';
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(API_KEY || "AIzaSyDummyKey");
 
 // Fallback response engine for RentRight if API key is rate-limited or offline
-const getOfflineRentRightResponse = (input: string): string => {
+// Exported so the offline rule engine can back-stop any provider failure
+export const getOfflineRentRightResponse = (input: string): string => {
   const query = input.toLowerCase();
 
   if (query.includes("afford") || query.includes("budget") || query.includes("30%")) {
@@ -34,25 +36,30 @@ const getOfflineRentRightResponse = (input: string): string => {
   return "Hello! I am your RentRight Assistant. I can help you find student PGs, calculate your 30% affordability limit, guide you through our side-by-side comparison matrix, or explain our non-discrimination fair housing standards. What would you like to explore?";
 };
 
-export async function generateGeminiResponse(userInput: string): Promise<string> {
+export async function generateGeminiResponse(
+  userInput: string,
+  history: ChatTurn[] = []
+): Promise<string> {
   try {
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
-    const rentRightPrompt = `You are the AI assistant for RentRight, a transparent rental accommodation discovery platform for university students and early-career working professionals.
-    Address questions about:
-    - Finding student PGs, shared flats, and private rooms
-    - The 30% rental affordability rule
-    - Comparing rent, security deposits, and mess food
-    - On-site property inspection checklists
-    - Tenant rights and zero-discrimination fair housing practices
-    Be helpful, concise, and informative. User question: ${userInput}`;
+    // RAG prompt: RentRight persona + retrieved site pages/listings as context
+    const prompt = buildRagPrompt(userInput);
 
-    const result = await model.generateContent(rentRightPrompt);
-    const response = result.response;
-    return response.text();
+    // Replay the last few turns so follow-up questions keep context
+    const chatHistory = history.slice(-6).map((turn) => ({
+      role: turn.role === "user" ? ("user" as const) : ("model" as const),
+      parts: [{ text: turn.content }]
+    }));
+
+    const chat = model.startChat({ history: chatHistory });
+    const result = await chat.sendMessage(prompt);
+    return result.response.text();
   } catch (error) {
-    console.warn('Gemini API call fallback to RentRight rule engine:', error);
-    return getOfflineRentRightResponse(userInput);
+    // Re-throw: chatApi orchestrates the offline fallback so failures are
+    // not silently mislabelled as a Gemini answer.
+    console.warn('Gemini API call failed:', error);
+    throw error;
   }
 }
 
@@ -62,6 +69,7 @@ export async function testGeminiConnection(): Promise<string> {
     const result = await model.generateContent('ping');
     return result.response.text();
   } catch (error) {
-    return 'RentRight Offline Engine Active';
+    console.warn('Gemini connection test failed:', error);
+    throw error;
   }
 }

@@ -8,6 +8,16 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    proxy: {
+      // NVIDIA's integrate endpoint does not send CORS headers, so browser
+      // calls must be proxied through the dev server in development.
+      "/nemotron-api": {
+        target: "https://integrate.api.nvidia.com",
+        changeOrigin: true,
+        secure: true,
+        rewrite: (p) => p.replace(/^\/nemotron-api/, ""),
+      },
+    },
   },
   plugins: [
     react(),
