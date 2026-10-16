@@ -249,6 +249,74 @@ export const PropertiesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         message: "Hi Arjun, loved the pictures of the flat in HSR. I work as a UI/UX designer. Do you guys have a dedicated cook or maid service arranged?",
         status: "pending",
         createdAt: "2026-10-15"
+      },
+      {
+        id: "ENQ-1003",
+        propertyId: 33,
+        propertyTitle: "OMR Tech Corridor PG - AC Single Room near Sholinganallur",
+        ownerId: 233,
+        seekerId: 4,
+        seekerName: "Aditi Krishnan",
+        seekerEmail: "aditi.k@example.com",
+        shareContactPermission: false,
+        moveInDate: "2026-10-28",
+        stayDurationMonths: 12,
+        occupantType: "Working Professional",
+        message: "Hello, I've just joined a fintech firm in Sholinganallur. Does the PG provide a company shuttle pickup point nearby, and are meals included on weekends too?",
+        status: "replied",
+        ownerReply: "Hi Aditi, yes, the shuttle stop is 200m away and all 3 meals are served on weekends as well.",
+        createdAt: "2026-10-13"
+      },
+      {
+        id: "ENQ-1004",
+        propertyId: 37,
+        propertyTitle: "Salt Lake Sector V Coliving Studio - Walk to IT Hubs",
+        ownerId: 237,
+        seekerId: 5,
+        seekerName: "Souvik Mukherjee",
+        seekerEmail: "souvik.m@example.com",
+        seekerPhone: "+91 90070 11223",
+        shareContactPermission: true,
+        moveInDate: "2026-11-01",
+        stayDurationMonths: 6,
+        occupantType: "Working Professional",
+        message: "Is the studio available from 1st November? I'd also like to know if electricity is metered separately.",
+        status: "contact_shared",
+        ownerReply: "Yes, available from Nov 1. Electricity is included in rent up to 150 units.",
+        createdAt: "2026-10-12"
+      },
+      {
+        id: "ENQ-1005",
+        propertyId: 45,
+        propertyTitle: "Vijay Nagar Coaching Hub Hostel - Indore",
+        ownerId: 245,
+        seekerId: 6,
+        seekerName: "Ankit Tiwari",
+        seekerEmail: "ankit.aspirant@example.com",
+        shareContactPermission: false,
+        moveInDate: "2026-10-20",
+        stayDurationMonths: 10,
+        occupantType: "Student",
+        message: "I'm preparing for CA Inter. Is the library open 24/7 and is there a quiet floor for students?",
+        status: "pending",
+        createdAt: "2026-10-15"
+      },
+      {
+        id: "ENQ-1006",
+        propertyId: 58,
+        propertyTitle: "Indiranagar 2BHK Entire Flat for Professionals",
+        ownerId: 258,
+        seekerId: 7,
+        seekerName: "Megha & Karan",
+        seekerEmail: "megha.karan@example.com",
+        shareContactPermission: false,
+        moveInDate: "2026-11-15",
+        stayDurationMonths: 11,
+        occupantType: "Working Professional",
+        message: "We are two professionals looking to share the flat. Is the security deposit negotiable to 2 months?",
+        status: "rejected",
+        ownerReply: "Sorry, the deposit is fixed as per society norms.",
+        createdAt: "2026-10-14"
       }
     ];
   });
@@ -272,6 +340,45 @@ export const PropertiesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         seekerName: "Rahul Verma",
         notes: "Requested a morning physical walk-around of room and dining mess area.",
         createdAt: "2026-10-15"
+      },
+      {
+        id: "VIS-502",
+        userId: 4,
+        propertyId: 33,
+        propertyTitle: "OMR Tech Corridor PG - AC Single Room near Sholinganallur",
+        date: "2026-10-19",
+        timeSlot: "05:00 PM",
+        visitType: "in-person",
+        status: "pending",
+        seekerName: "Aditi Krishnan",
+        notes: "Would like to see the AC single room and dining area after office hours.",
+        createdAt: "2026-10-14"
+      },
+      {
+        id: "VIS-503",
+        userId: 5,
+        propertyId: 37,
+        propertyTitle: "Salt Lake Sector V Coliving Studio - Walk to IT Hubs",
+        date: "2026-10-18",
+        timeSlot: "12:30 PM",
+        visitType: "virtual",
+        status: "confirmed",
+        seekerName: "Souvik Mukherjee",
+        notes: "Video walkthrough requested before relocating from Bhubaneswar.",
+        createdAt: "2026-10-13"
+      },
+      {
+        id: "VIS-504",
+        userId: 1,
+        propertyId: 46,
+        propertyTitle: "Whitefield ITPL Premium Coliving Room with Gym",
+        date: "2026-10-12",
+        timeSlot: "10:00 AM",
+        visitType: "in-person",
+        status: "completed",
+        seekerName: "Rahul Verma",
+        notes: "Checked gym, rooftop lounge and room ventilation.",
+        createdAt: "2026-10-09"
       }
     ];
   });
