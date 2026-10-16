@@ -2,8 +2,13 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Property, useProperties } from "../contexts/PropertiesContext";
 import { Badge } from "@/components/ui/badge";
-import { Star, ShieldCheck, Heart, Scale, MapPin, Calendar, Check, Zap } from "lucide-react";
+import { Star, ShieldCheck, Heart, Scale, MapPin, Calendar, Check, Zap, FileCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface PropertyCardProps {
   property: Property;
@@ -86,9 +91,28 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({ property, featured =
               </Badge>
 
               {property.verificationStatus === "Verified" ? (
-                <Badge className="bg-emerald-50 text-emerald-800 border border-emerald-300 text-[10px] font-semibold flex items-center gap-1 shadow-sm">
-                  <ShieldCheck className="w-3 h-3 text-emerald-600" /> Verified
-                </Badge>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Badge className="bg-emerald-50 text-emerald-800 border border-emerald-300 text-[10px] font-semibold flex items-center gap-1 shadow-sm cursor-help">
+                      <ShieldCheck className="w-3 h-3 text-emerald-600" /> Verified
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="text-xs max-w-xs">
+                    <div className="space-y-1">
+                      <p className="font-bold flex items-center gap-1">
+                        <FileCheck className="w-3 h-3 text-emerald-600" />
+                        {property.verificationProof?.documentType || "Physically Verified"}
+                      </p>
+                      {property.verificationProof?.verifiedDate && (
+                        <p>Verified on: {property.verificationProof.verifiedDate}</p>
+                      )}
+                      {property.verificationProof?.verifiedBy && (
+                        <p>By: {property.verificationProof.verifiedBy}</p>
+                      )}
+                      <p className="text-emerald-400">Owner document proof confirmed</p>
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
               ) : (
                 <Badge variant="secondary" className="bg-amber-50 text-amber-800 border border-amber-300 text-[10px] font-medium">
                   Owner Claimed

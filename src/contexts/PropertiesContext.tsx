@@ -9,6 +9,13 @@ export type TargetAudience = "Students" | "Working Professionals" | "Both" | str
 export type ListingStatus = "Available" | "Rented" | "Under Maintenance" | string;
 export type VerificationStatus = "Verified" | "Owner Claimed" | string;
 
+export type VerificationProof = {
+  documentType: "Electricity Bill" | "Ownership Deed" | "Municipal Tax Receipt" | "Aadhaar Verified" | "Physical Inspection";
+  verifiedDate: string;
+  verifiedBy: string;
+  proofNotes?: string;
+};
+
 export type Property = {
   id: number;
   title: string;
@@ -23,6 +30,7 @@ export type Property = {
   availableFrom: string;
   listingStatus: ListingStatus;
   verificationStatus: VerificationStatus;
+  verificationProof?: VerificationProof;
   listedDate: string;
   expiryDays: number;
   locality: string;
@@ -78,8 +86,10 @@ export type Enquiry = {
   stayDurationMonths: number;
   occupantType: "Student" | "Working Professional" | "Other";
   message: string;
-  status: "pending" | "contact_shared" | "rejected" | "replied";
+  status: "pending" | "accepted" | "contact_revealed" | "rejected" | "replied";
   ownerReply?: string;
+  acceptedAt?: string;
+  contactRevealedAt?: string;
   createdAt: string;
 };
 
@@ -151,6 +161,8 @@ type PropertiesContextType = {
   updateEnquiryStatus: (enquiryId: string, status: Enquiry["status"], reply?: string) => void;
   getEnquiriesForOwner: (ownerId: number) => Enquiry[];
   getEnquiriesForSeeker: (emailOrId: string) => Enquiry[];
+  acceptEnquiry: (enquiryId: string) => void;
+  revealContact: (enquiryId: string) => void;
   // Visit Bookings
   bookings: VisitBooking[];
   addBooking: (booking: Omit<VisitBooking, "id" | "createdAt">) => void;
@@ -240,8 +252,10 @@ export const PropertiesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         stayDurationMonths: 6,
         occupantType: "Working Professional",
         message: "Hi Priya, I work as an SDE intern at Koramangala. Is the room available for immediate move-in? Also wanted to check if 300 Mbps WiFi is reliable for Zoom meetings.",
-        status: "contact_shared",
+        status: "contact_revealed",
         ownerReply: "Hello Rahul! Yes, room 204 is available. The WiFi is dedicated fiber with dual backup. You are welcome for a visit!",
+        acceptedAt: "2026-10-15",
+        contactRevealedAt: "2026-10-15",
         createdAt: "2026-10-14"
       },
       {
@@ -486,13 +500,13 @@ export const PropertiesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const isSaved = (id: number) => savedIds.includes(id);
 
-  // Enquiry handling (Respecting privacy: no direct phone number leak)
+  // Enquiry handling (Safe Contact: phone always masked until owner accepts)
   const addEnquiry = (data: Omit<Enquiry, "id" | "createdAt" | "status">): string => {
     const newId = `ENQ-${Math.floor(1000 + Math.random() * 9000)}`;
     const newEnquiry: Enquiry = {
       ...data,
       id: newId,
-      status: data.shareContactPermission ? "contact_shared" : "pending",
+      status: "pending",
       createdAt: new Date().toISOString().split("T")[0]
     };
 
@@ -506,7 +520,7 @@ export const PropertiesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       return p;
     }));
 
-    toast.success(`Enquiry request #${newId} transmitted securely to the owner!`);
+    toast.success(`Enquiry request #${newId} transmitted securely. Owner must accept before your contact is revealed.`);
     return newId;
   };
 
@@ -522,6 +536,28 @@ export const PropertiesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       return e;
     }));
     toast.success(`Enquiry ${enquiryId} updated to ${status}`);
+  };
+
+  /** Owner accepts enquiry → seeker gets notified, but phone still masked */
+  const acceptEnquiry = (enquiryId: string) => {
+    setEnquiries(prev => prev.map(e => {
+      if (e.id === enquiryId) {
+        return { ...e, status: "accepted" as const, acceptedAt: new Date().toISOString().split("T")[0] };
+      }
+      return e;
+    }));
+    toast.success(`Enquiry ${enquiryId} accepted. Seeker has been notified.`);
+  };
+
+  /** Owner reveals contact info after accepting → phone becomes visible */
+  const revealContact = (enquiryId: string) => {
+    setEnquiries(prev => prev.map(e => {
+      if (e.id === enquiryId) {
+        return { ...e, status: "contact_revealed" as const, contactRevealedAt: new Date().toISOString().split("T")[0] };
+      }
+      return e;
+    }));
+    toast.success(`Contact info revealed for enquiry ${enquiryId}.`);
   };
 
   const getEnquiriesForOwner = (ownerId: number) => {
@@ -698,6 +734,8 @@ export const PropertiesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         updateEnquiryStatus,
         getEnquiriesForOwner,
         getEnquiriesForSeeker,
+        acceptEnquiry,
+        revealContact,
         bookings,
         addBooking,
         updateBookingStatus,

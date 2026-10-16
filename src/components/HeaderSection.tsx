@@ -22,7 +22,8 @@ import {
   Sparkles,
   ShieldCheck,
   LogOut,
-  LayoutDashboard
+  LayoutDashboard,
+  Navigation
 } from "lucide-react";
 
 export const HeaderSection: React.FC = () => {
@@ -100,6 +101,10 @@ export const HeaderSection: React.FC = () => {
           <Link to="/tools" className={`flex items-center gap-1.5 ${isActive("/tools")}`}>
             <Sparkles className="w-3.5 h-3.5 text-amber-500" />
             <span>Tools & Innovations</span>
+          </Link>
+          <Link to="/commute-calculator" className={`flex items-center gap-1.5 ${isActive("/commute-calculator")}`}>
+            <Navigation className="w-3.5 h-3.5 text-blue-600" />
+            <span>Commute Calculator</span>
           </Link>
           <Link to="/owner/enquiries" className={`flex items-center gap-1.5 ${isActive("/owner/enquiries")}`}>
             <Building2 className="w-3.5 h-3.5 text-indigo-600" />
@@ -236,6 +241,13 @@ export const HeaderSection: React.FC = () => {
             className="block py-2 border-b border-slate-100"
           >
             Tools & Innovations Suite
+          </Link>
+          <Link
+            to="/commute-calculator"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block py-2 border-b border-slate-100"
+          >
+            Commute + Cost Calculator
           </Link>
           <Link
             to="/owner/enquiries"

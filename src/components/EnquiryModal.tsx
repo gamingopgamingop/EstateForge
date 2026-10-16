@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ShieldCheck, Lock, Send, CheckCircle2 } from "lucide-react";
+import { ShieldCheck, Lock, Send, CheckCircle2, PhoneOff, Eye } from "lucide-react";
 import { toast } from "sonner";
 
 interface EnquiryModalProps {
@@ -60,7 +60,7 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
       seekerId: user?.id,
       seekerName: name,
       seekerEmail: email,
-      seekerPhone: shareContactPermission ? phone : undefined,
+      seekerPhone: phone,
       shareContactPermission,
       moveInDate,
       stayDurationMonths: Number(stayDuration),
@@ -92,9 +92,7 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
             </div>
             <p className="text-sm text-slate-600 max-w-sm mx-auto leading-relaxed">
               Your inquiry has been relayed to <span className="font-semibold text-slate-900">{property.ownerName}</span>.
-              {shareContactPermission
-                ? " You granted contact sharing, so the owner may call or WhatsApp you directly."
-                : " Your direct phone number remains strictly masked. The owner will respond via email and platform messages."}
+              <span className="block mt-1.5 text-xs text-violet-700 font-medium">Your phone number is stored securely but <strong>remains hidden</strong> until the owner explicitly accepts your enquiry. Once accepted, you can choose to reveal contact details both ways.</span>
             </p>
             <div className="pt-4">
               <Button onClick={handleResetAndClose} className="bg-violet-600 hover:bg-violet-700 text-white w-full">
@@ -127,11 +125,11 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
               </DialogDescription>
             </DialogHeader>
 
-            {/* Privacy Guarantee Banner */}
+            {/* Safe Contact Privacy Banner */}
             <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-start gap-2.5 text-xs text-slate-600">
-              <Lock className="w-4 h-4 text-violet-600 shrink-0 mt-0.5" />
+              <PhoneOff className="w-4 h-4 text-violet-600 shrink-0 mt-0.5" />
               <div>
-                <span className="font-semibold text-slate-900">Privacy & Anti-Spam Guarantee:</span> Owner's and Seeker's private contact numbers are protected. Your phone number is never published publicly or sold.
+                <span className="font-semibold text-slate-900">Safe Contact System:</span> Your phone number is never shown to the owner publicly. After you send this enquiry, the owner must <strong>Accept</strong> it first. Only then does your contact get revealed. This protects you from spam calls and unsolicited messages.
               </div>
             </div>
 
@@ -236,7 +234,7 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
               />
             </div>
 
-            {/* Permission Checkbox for phone sharing */}
+            {/* Permission Checkbox for early contact sharing */}
             <div className="flex items-start gap-2.5 p-3 rounded-lg bg-violet-50/60 border border-violet-100">
               <Checkbox
                 id="shareContact"
@@ -245,7 +243,10 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
                 className="mt-0.5 data-[state=checked]:bg-violet-600"
               />
               <label htmlFor="shareContact" className="text-xs text-slate-700 leading-normal cursor-pointer">
-                <span className="font-medium text-slate-900">Authorize contact sharing:</span> Allow {property.ownerName} to view my contact number for scheduling a visit and WhatsApp follow-up. (Leave unchecked to communicate only via email/platform).
+                <span className="font-medium text-slate-900 flex items-center gap-1">
+                  <Eye className="w-3 h-3" /> Optional: Accelerate contact sharing
+                </span>
+                <span className="text-[11px] text-slate-600 mt-0.5 block">Check this to authorize the owner to see your phone number <strong>immediately upon accepting</strong> (skip the reveal step). Leave unchecked for full privacy control.</span>
               </label>
             </div>
 

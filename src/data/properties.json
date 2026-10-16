@@ -13,6 +13,12 @@
     "availableFrom": "2026-10-20",
     "listingStatus": "Available",
     "verificationStatus": "Verified",
+    "verificationProof": {
+      "documentType": "Electricity Bill",
+      "verifiedDate": "2026-09-25",
+      "verifiedBy": "RentRight Field Agent #RA-12",
+      "proofNotes": "Owner uploaded BSES electricity bill with matching address. Physical inspection confirmed."
+    },
     "listedDate": "2026-09-28",
     "expiryDays": 45,
     "locality": "Koramangala 4th Block",

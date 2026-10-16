@@ -70,6 +70,8 @@ export const OwnerEnquiriesPage: React.FC = () => {
     enquiries,
     bookings,
     updateEnquiryStatus,
+    acceptEnquiry,
+    revealContact,
     updatePropertyStatus,
     renewListing,
     addNewListing,
@@ -654,13 +656,17 @@ export const OwnerEnquiriesPage: React.FC = () => {
                               </div>
                               <div>
                                 <span className="text-slate-400 block text-[10px]">Seeker Contact:</span>
-                                {enq.shareContactPermission && enq.seekerPhone ? (
+                                {enq.status === "contact_revealed" && enq.seekerPhone ? (
                                   <span className="font-semibold text-emerald-700 flex items-center gap-1">
                                     <Phone className="w-3 h-3 text-emerald-600" /> {enq.seekerPhone}
                                   </span>
+                                ) : enq.status === "accepted" ? (
+                                  <span className="text-blue-600 font-semibold flex items-center gap-1 text-[11px]">
+                                    <UserCheck className="w-3 h-3" /> Accepted – click Reveal to see phone
+                                  </span>
                                 ) : (
                                   <span className="text-slate-500 italic flex items-center gap-1 text-[11px]">
-                                    <Mail className="w-3 h-3" /> Protected ({enq.seekerEmail})
+                                    <ShieldCheck className="w-3 h-3 text-amber-500" /> Protected – accept enquiry first
                                   </span>
                                 )}
                               </div>
@@ -675,36 +681,65 @@ export const OwnerEnquiriesPage: React.FC = () => {
 
                           <div className="flex flex-col gap-2 shrink-0 md:w-44">
                             <div className="mb-1 text-right">
-                              {enq.status === "contact_shared" && (
-                                <Badge className="bg-emerald-600 text-white text-[10px]">Contact Shared</Badge>
+                              {enq.status === "pending" && (
+                                <Badge variant="secondary" className="bg-amber-100 text-amber-800 text-[10px]">Pending Review</Badge>
+                              )}
+                              {enq.status === "accepted" && (
+                                <Badge className="bg-blue-600 text-white text-[10px]">Accepted</Badge>
+                              )}
+                              {enq.status === "contact_revealed" && (
+                                <Badge className="bg-emerald-600 text-white text-[10px]">Contact Revealed</Badge>
                               )}
                               {enq.status === "replied" && (
                                 <Badge className="bg-blue-600 text-white text-[10px]">Replied</Badge>
                               )}
-                              {enq.status === "pending" && (
-                                <Badge variant="secondary" className="bg-amber-100 text-amber-800 text-[10px]">Pending Review</Badge>
+                              {enq.status === "rejected" && (
+                                <Badge variant="destructive" className="text-[10px]">Rejected</Badge>
                               )}
                             </div>
 
-                            <Button
-                              size="sm"
-                              onClick={() => {
-                                setReplyModalEnquiryId(enq.id);
-                                setReplyText(enq.ownerReply || "");
-                              }}
-                              className="bg-violet-600 hover:bg-violet-700 text-white text-xs h-8"
-                            >
-                              <Send className="w-3 h-3 mr-1.5" /> Reply to Seeker
-                            </Button>
+                            {enq.status === "pending" && (
+                              <>
+                                <Button
+                                  size="sm"
+                                  onClick={() => acceptEnquiry(enq.id)}
+                                  className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-8"
+                                >
+                                  <UserCheck className="w-3 h-3 mr-1.5" /> Accept Enquiry
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => updateEnquiryStatus(enq.id, "rejected")}
+                                  className="text-xs h-8 text-rose-600 hover:bg-rose-50"
+                                >
+                                  Reject
+                                </Button>
+                              </>
+                            )}
 
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => updateEnquiryStatus(enq.id, "contact_shared")}
-                              className="text-xs h-8 text-emerald-700 hover:bg-emerald-50"
-                            >
-                              <UserCheck className="w-3 h-3 mr-1.5" /> Accept & Share Phone
-                            </Button>
+                            {enq.status === "accepted" && (
+                              <Button
+                                size="sm"
+                                onClick={() => revealContact(enq.id)}
+                                className="bg-violet-600 hover:bg-violet-700 text-white text-xs h-8"
+                              >
+                                <Phone className="w-3 h-3 mr-1.5" /> Reveal Contact Info
+                              </Button>
+                            )}
+
+                            {(enq.status === "contact_revealed" || enq.status === "replied") && (
+                              <Button
+                                size="sm"
+                                onClick={() => {
+                                  setReplyModalEnquiryId(enq.id);
+                                  setReplyText(enq.ownerReply || "");
+                                }}
+                                className="bg-violet-600 hover:bg-violet-700 text-white text-xs h-8"
+                              >
+                                <Send className="w-3 h-3 mr-1.5" /> Reply to Seeker
+                              </Button>
+                            )}
                           </div>
                         </div>
                       </CardContent>

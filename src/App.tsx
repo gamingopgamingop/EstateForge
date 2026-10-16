@@ -14,6 +14,7 @@ import AffordabilityCalculatorPage from "./pages/AffordabilityCalculatorPage";
 import RoommateMatcherPage from "./pages/RoommateMatcherPage";
 import InspectionChecklistPage from "./pages/InspectionChecklistPage";
 import LocalityComparePage from "./pages/LocalityComparePage";
+import CommuteCalculatorPage from "./pages/CommuteCalculatorPage";
 import ToolsPage from "./pages/ToolsPage";
 import OwnerEnquiriesPage from "./pages/OwnerEnquiriesPage";
 import Login from "./pages/Login";
@@ -44,6 +45,7 @@ const App = () => (
               <Route path="/roommate-matcher" element={<RoommateMatcherPage />} />
               <Route path="/inspection-checklist" element={<InspectionChecklistPage />} />
               <Route path="/locality-compare" element={<LocalityComparePage />} />
+              <Route path="/commute-calculator" element={<CommuteCalculatorPage />} />
               <Route path="/tools" element={<ToolsPage />} />
               <Route
                 path="/owner/enquiries"

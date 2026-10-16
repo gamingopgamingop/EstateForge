@@ -4,7 +4,7 @@ import HeaderSection from "../components/HeaderSection";
 import FooterSection from "../components/FooterSection";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Calculator, Users, ClipboardCheck, Navigation, ArrowRight, Sparkles, Scale, ShieldCheck } from "lucide-react";
+import { Calculator, Users, ClipboardCheck, Navigation, ArrowRight, Sparkles, Scale, ShieldCheck, MapPin } from "lucide-react";
 
 export const ToolsPage: React.FC = () => {
   const tools = [
@@ -47,6 +47,14 @@ export const ToolsPage: React.FC = () => {
       icon: <Navigation className="w-6 h-6 text-amber-600" />,
       path: "/locality-compare",
       color: "bg-amber-50 text-amber-700 border-amber-200"
+    },
+    {
+      title: "Commute + Cost Calculator",
+      badge: "Travel Intelligence",
+      desc: "Enter your college or office location to auto-calculate distance, travel time, and monthly commute cost for every property using smart geo-matching.",
+      icon: <MapPin className="w-6 h-6 text-blue-600" />,
+      path: "/commute-calculator",
+      color: "bg-blue-50 text-blue-700 border-blue-200"
     }
   ];
 

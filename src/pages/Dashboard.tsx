@@ -218,10 +218,10 @@ export const Dashboard: React.FC = () => {
                           <span className="font-bold text-sm text-slate-900">{enq.propertyTitle}</span>
                         </div>
                         <Badge
-                          variant={enq.status === "contact_shared" ? "default" : "secondary"}
+                          variant={enq.status === "contact_revealed" || enq.status === "accepted" ? "default" : "secondary"}
                           className="text-[10px]"
                         >
-                          {enq.status === "contact_shared" ? "Contact Shared with Landlord" : enq.status}
+                          {enq.status === "pending" ? "Awaiting Owner Response" : enq.status === "accepted" ? "Owner Accepted – Contact Pending" : enq.status === "contact_revealed" ? "Contact Revealed to Owner" : enq.status === "rejected" ? "Declined by Owner" : enq.status}
                         </Badge>
                       </div>
 

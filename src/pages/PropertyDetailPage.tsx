@@ -40,7 +40,9 @@ import {
   Zap,
   Sparkles,
   Building2,
-  AlertTriangle
+  AlertTriangle,
+  FileCheck,
+  PhoneOff
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -197,11 +199,11 @@ export const PropertyDetailPage: React.FC = () => {
                 </Badge>
                 {property.verificationStatus === "Verified" ? (
                   <Badge className="bg-emerald-50 text-emerald-800 border border-emerald-300 text-xs font-semibold flex items-center gap-1">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Physically Verified
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> {property.verificationProof?.documentType || "Physically Verified"}
                   </Badge>
                 ) : (
-                  <Badge variant="secondary" className="bg-amber-100 text-amber-800 text-xs">
-                    Owner Claimed
+                  <Badge variant="secondary" className="bg-rose-100 text-rose-800 border border-rose-300 text-xs font-semibold flex items-center gap-1">
+                    <AlertTriangle className="w-3.5 h-3.5 text-rose-500" /> Unverified Owner Claim
                   </Badge>
                 )}
               </div>
@@ -408,13 +410,39 @@ export const PropertyDetailPage: React.FC = () => {
                   </Button>
                 </div>
 
-                {/* Privacy & Anti-Spam Guarantee Box */}
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 flex items-start gap-2.5 text-[11px] text-slate-600">
-                  <Lock className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-bold text-slate-800">Spam-Free Enquiry Flow:</span> Your phone number remains hidden. Only you choose when to share contact details with {property.ownerName}.
+                {/* Safe Contact Privacy Box */}
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2 text-[11px] text-slate-600">
+                  <div className="flex items-start gap-2.5">
+                    <PhoneOff className="w-4 h-4 text-violet-600 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-bold text-slate-800">Safe Contact System:</span> Owner's phone number is never publicly shown. Send an in-app enquiry &rarr; Owner accepts &rarr; Contact is revealed both ways. Your privacy is protected.
+                    </div>
                   </div>
                 </div>
+
+                {/* Verification Proof Detail */}
+                {property.verificationStatus === "Verified" && property.verificationProof ? (
+                  <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 space-y-1.5 text-[11px]">
+                    <div className="font-bold text-emerald-800 flex items-center gap-1.5 text-xs">
+                      <FileCheck className="w-4 h-4 text-emerald-600" /> Verification Proof On File
+                    </div>
+                    <div className="text-emerald-700 space-y-0.5">
+                      <div><span className="font-semibold">Document:</span> {property.verificationProof.documentType}</div>
+                      <div><span className="font-semibold">Verified:</span> {property.verificationProof.verifiedDate}</div>
+                      <div><span className="font-semibold">By:</span> {property.verificationProof.verifiedBy}</div>
+                      {property.verificationProof.proofNotes && (
+                        <div className="italic text-emerald-600 pt-0.5">{property.verificationProof.proofNotes}</div>
+                      )}
+                    </div>
+                  </div>
+                ) : property.verificationStatus !== "Verified" ? (
+                  <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-[11px] text-rose-700 flex items-start gap-2">
+                    <AlertTriangle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-bold text-rose-800">Unverified Listing:</span> Owner has not uploaded ownership proof or electricity bill. Exercise caution and insist on physical document verification before paying any deposit.
+                    </div>
+                  </div>
+                ) : null}
 
                 {/* Owner Info Snippet */}
                 <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
@@ -422,9 +450,15 @@ export const PropertyDetailPage: React.FC = () => {
                     <div className="font-semibold text-slate-900">{property.ownerName}</div>
                     <div className="text-[10px] text-slate-400">{property.ownerResponseTime || "Replies quickly"}</div>
                   </div>
-                  <Badge variant="outline" className="text-[10px] text-emerald-700 border-emerald-300 bg-emerald-50">
-                    Verified Host
-                  </Badge>
+                  {property.verificationStatus === "Verified" ? (
+                    <Badge variant="outline" className="text-[10px] text-emerald-700 border-emerald-300 bg-emerald-50 flex items-center gap-1">
+                      <ShieldCheck className="w-3 h-3" /> Verified Host
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-[10px] text-rose-600 border-rose-300 bg-rose-50">
+                      Unverified
+                    </Badge>
+                  )}
                 </div>
               </div>
 
