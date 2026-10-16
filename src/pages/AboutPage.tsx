@@ -19,7 +19,7 @@ export const AboutPage: React.FC = () => {
               Transparent Accommodation for Students & Working Professionals
             </h1>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              Addressing HackVision Problem Statement A3: Helping students and young professionals discover accommodation, compare options, contact landlords safely, and manage transparent leases.
+              Empowering university students and working professionals to discover verified rental accommodations, compare options side-by-side, communicate securely without spam, and sign fair, transparent leases.
             </p>
           </div>
 

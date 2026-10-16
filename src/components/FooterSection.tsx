@@ -29,7 +29,7 @@ export const FooterSection: React.FC = () => {
               Transparent accommodation discovery platform built for university students and early-career working professionals.
             </p>
             <div className="text-[11px] text-slate-500">
-              Compliant with HackVision Problem Statement A3.
+              Fair Housing Standard • Transparent Tenancy Platform
             </div>
           </div>
 
@@ -117,7 +117,7 @@ export const FooterSection: React.FC = () => {
 
         <div className="mt-10 pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-500">
           <div>
-            © {new Date().getFullYear()} RentRight. Built for HackVision • All rights reserved.
+            © {new Date().getFullYear()} RentRight. All rights reserved.
           </div>
           <div className="flex gap-4">
             <Link to="/about" className="hover:text-slate-300">Privacy Policy</Link>

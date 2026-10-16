@@ -52,7 +52,7 @@ export const HeroSection: React.FC = () => {
           {/* Top Pill */}
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-violet-900/60 border border-violet-500/30 text-violet-300 text-xs font-semibold backdrop-blur-md animate-fade-in">
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>HackVision A3 Compliant: Transparent Rental Discovery</span>
+            <span>Verified Accommodations • Transparent Rental Discovery</span>
           </div>
 
           {/* Title */}

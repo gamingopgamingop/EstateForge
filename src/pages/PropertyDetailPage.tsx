@@ -339,7 +339,7 @@ export const PropertyDetailPage: React.FC = () => {
                   <TabsContent value="transparency" className="space-y-4 text-xs leading-relaxed text-slate-600">
                     <h3 className="text-base font-bold text-slate-900">RentRight Non-Discrimination Tenancy Clause</h3>
                     <p>
-                      In adherence to HackVision Problem Statement A3 and constitutional principles, this accommodation operates under RentRight's strict zero-discrimination policy:
+                      In adherence to RentRight's Fair Tenancy Charter and constitutional principles, this accommodation operates under strict zero-discrimination standards:
                     </p>
                     <ul className="list-disc list-inside space-y-1.5 text-slate-700 font-medium">
                       <li>No applicant may be rejected based on caste, religion, food habit, or gender identity.</li>

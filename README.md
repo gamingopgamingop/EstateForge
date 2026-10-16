@@ -1,7 +1,7 @@
 # RentRight 🏠
 
 **Transparent Accommodation Discovery for Students & Working Professionals**  
-*HackVision Problem Statement A3: RentRight*
+*Privacy-first rental discovery, comparison matrix, affordability calculator, and transparent owner management.*
 
 ---
 
@@ -12,7 +12,7 @@ Finding rental accommodation in university and IT corridors (Bengaluru, Delhi NC
 
 ---
 
-## 🌟 HackVision Core Requirements Delivered
+## 🌟 Core Architecture & Platform Capabilities
 
 ### 1. Two Dedicated Roles (Seeker & Owner)
 - **Seeker (Student / Working Professional)**: Discover rooms/PGs/flats, save shortlists, send permissioned inquiries, schedule property viewings, and check affordability.
