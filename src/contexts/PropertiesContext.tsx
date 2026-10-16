@@ -252,7 +252,7 @@ export const PropertiesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       },
       {
         id: "ENQ-1003",
-        propertyId: 33,
+        propertyId: 38,
         propertyTitle: "OMR Tech Corridor PG - AC Single Room near Sholinganallur",
         ownerId: 233,
         seekerId: 4,
@@ -269,7 +269,7 @@ export const PropertiesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       },
       {
         id: "ENQ-1004",
-        propertyId: 37,
+        propertyId: 42,
         propertyTitle: "Salt Lake Sector V Coliving Studio - Walk to IT Hubs",
         ownerId: 237,
         seekerId: 5,
@@ -287,7 +287,7 @@ export const PropertiesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       },
       {
         id: "ENQ-1005",
-        propertyId: 45,
+        propertyId: 50,
         propertyTitle: "Vijay Nagar Coaching Hub Hostel - Indore",
         ownerId: 245,
         seekerId: 6,
@@ -303,7 +303,7 @@ export const PropertiesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       },
       {
         id: "ENQ-1006",
-        propertyId: 58,
+        propertyId: 63,
         propertyTitle: "Indiranagar 2BHK Entire Flat for Professionals",
         ownerId: 258,
         seekerId: 7,
@@ -344,7 +344,7 @@ export const PropertiesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       {
         id: "VIS-502",
         userId: 4,
-        propertyId: 33,
+        propertyId: 38,
         propertyTitle: "OMR Tech Corridor PG - AC Single Room near Sholinganallur",
         date: "2026-10-19",
         timeSlot: "05:00 PM",
@@ -357,7 +357,7 @@ export const PropertiesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       {
         id: "VIS-503",
         userId: 5,
-        propertyId: 37,
+        propertyId: 42,
         propertyTitle: "Salt Lake Sector V Coliving Studio - Walk to IT Hubs",
         date: "2026-10-18",
         timeSlot: "12:30 PM",
@@ -370,7 +370,7 @@ export const PropertiesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       {
         id: "VIS-504",
         userId: 1,
-        propertyId: 46,
+        propertyId: 51,
         propertyTitle: "Whitefield ITPL Premium Coliving Room with Gym",
         date: "2026-10-12",
         timeSlot: "10:00 AM",
