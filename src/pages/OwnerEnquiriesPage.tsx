@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import HeaderSection from "../components/HeaderSection";
 import FooterSection from "../components/FooterSection";
@@ -47,9 +47,21 @@ import {
   UserCheck,
   Building2,
   Send,
-  AlertCircle
+  AlertCircle,
+  ImagePlus,
+  Images,
+  Star,
+  X
 } from "lucide-react";
 import { toast } from "sonner";
+import {
+  fileToPhoto,
+  formatBytes,
+  totalPhotoBytes,
+  MAX_PHOTOS_PER_LISTING,
+  PHOTO_STORAGE_BUDGET_BYTES,
+  type PhotoFile
+} from "../utils/imageUpload";
 
 export const OwnerEnquiriesPage: React.FC = () => {
   const { user, loginAsDemo } = useAuth();
@@ -68,6 +80,13 @@ export const OwnerEnquiriesPage: React.FC = () => {
   const [replyModalEnquiryId, setReplyModalEnquiryId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
   const [addListingOpen, setAddListingOpen] = useState(false);
+
+  // Listing photos (uploaded by the owner, compressed to data URLs)
+  const [photos, setPhotos] = useState<PhotoFile[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // New Listing Form State
   const [newTitle, setNewTitle] = useState("");
@@ -110,10 +129,74 @@ export const OwnerEnquiriesPage: React.FC = () => {
     setReplyText("");
   };
 
+  // ---- Photo upload handlers -------------------------------------------------
+
+  const addFiles = async (fileList: FileList | File[]) => {
+    const incoming = Array.from(fileList);
+    if (incoming.length === 0) return;
+
+    setUploadError(null);
+
+    const room = MAX_PHOTOS_PER_LISTING - photos.length;
+    if (room <= 0) {
+      setUploadError(`You can upload up to ${MAX_PHOTOS_PER_LISTING} photos per listing.`);
+      return;
+    }
+
+    setIsUploading(true);
+    const accepted: PhotoFile[] = [];
+    const problems: string[] = [];
+
+    if (incoming.length > room) {
+      problems.push(`Only ${room} more photo(s) fit — the rest were skipped.`);
+    }
+
+    for (const file of incoming.slice(0, room)) {
+      try {
+        const photo = await fileToPhoto(file);
+        const projected = totalPhotoBytes([...photos, ...accepted, photo]);
+        if (projected > PHOTO_STORAGE_BUDGET_BYTES) {
+          problems.push(
+            `"${file.name}" skipped: photos would exceed ${formatBytes(PHOTO_STORAGE_BUDGET_BYTES)} of browser storage.`
+          );
+          continue;
+        }
+        accepted.push(photo);
+      } catch (err: any) {
+        problems.push(err?.message || `"${file.name}" could not be processed.`);
+      }
+    }
+
+    if (accepted.length > 0) setPhotos((prev) => [...prev, ...accepted]);
+    if (problems.length > 0) setUploadError(problems.join(" "));
+    setIsUploading(false);
+
+    // Reset so selecting the same file again still fires onChange
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const removePhoto = (id: string) => {
+    setPhotos((prev) => prev.filter((p) => p.id !== id));
+    setUploadError(null);
+  };
+
+  // First photo is the cover shown on cards and in search results
+  const makeCover = (id: string) => {
+    setPhotos((prev) => {
+      const target = prev.find((p) => p.id === id);
+      if (!target) return prev;
+      return [target, ...prev.filter((p) => p.id !== id)];
+    });
+  };
+
   const handleCreateListing = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle.trim() || !newAddress.trim()) {
       toast.error("Please fill in title and address");
+      return;
+    }
+    if (isUploading) {
+      toast.error("Please wait while your photos finish processing");
       return;
     }
 
@@ -133,7 +216,8 @@ export const OwnerEnquiriesPage: React.FC = () => {
       availableFrom: newAvailableFrom,
       description: newDescription || "Well ventilated accommodation ready for immediate move-in.",
       ownerId: ownerId,
-      ownerName: user?.name || "Property Owner"
+      ownerName: user?.name || "Property Owner",
+      images: photos.map((p) => p.dataUrl)
     });
 
     setAddListingOpen(false);
@@ -141,6 +225,12 @@ export const OwnerEnquiriesPage: React.FC = () => {
     setNewTitle("");
     setNewAddress("");
     setNewDescription("");
+    setPhotos([]);
+    setUploadError(null);
+
+    if (photos.length === 0) {
+      toast.info("Published with a placeholder photo — add real photos to get more enquiries.");
+    }
   };
 
   return (
@@ -314,6 +404,126 @@ export const OwnerEnquiriesPage: React.FC = () => {
                       className="mt-1 text-xs"
                       placeholder="Describe meal timings, high-speed WiFi, laundry facilities, study desks, and gate curfew rules..."
                     />
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs font-semibold">Property Photos</Label>
+                      <span className="text-[11px] text-slate-500">
+                        {photos.length}/{MAX_PHOTOS_PER_LISTING} · {formatBytes(totalPhotoBytes(photos))}
+                      </span>
+                    </div>
+
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      aria-label="Upload property photos"
+                      onClick={() => fileInputRef.current?.click()}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          fileInputRef.current?.click();
+                        }
+                      }}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        setIsDragging(true);
+                      }}
+                      onDragLeave={() => setIsDragging(false)}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        setIsDragging(false);
+                        addFiles(e.dataTransfer.files);
+                      }}
+                      className={`mt-1 rounded-xl border-2 border-dashed p-4 text-center cursor-pointer transition outline-none focus-visible:ring-2 focus-visible:ring-violet-500 ${
+                        isDragging
+                          ? "border-violet-500 bg-violet-50"
+                          : "border-slate-200 hover:border-violet-300 hover:bg-slate-50"
+                      }`}
+                    >
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        multiple
+                        className="hidden"
+                        onChange={(e) => e.target.files && addFiles(e.target.files)}
+                      />
+                      <ImagePlus className="w-5 h-5 mx-auto text-violet-600" />
+                      <p className="text-[11px] text-slate-600 mt-1.5 leading-relaxed">
+                        Drop photos here or <span className="font-semibold text-violet-700">click to browse</span>
+                        <br />
+                        <span className="text-slate-400">
+                          JPG, PNG or WebP · max {MAX_PHOTOS_PER_LISTING} photos · large files are auto-compressed
+                        </span>
+                      </p>
+                      {isUploading && (
+                        <p className="text-[11px] font-semibold text-violet-700 mt-1.5">Compressing photos…</p>
+                      )}
+                    </div>
+
+                    {uploadError && (
+                      <div className="mt-2 flex items-start gap-1.5 text-[11px] text-rose-700 bg-rose-50 border border-rose-100 rounded-lg p-2">
+                        <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-px" />
+                        <span>{uploadError}</span>
+                      </div>
+                    )}
+
+                    {photos.length > 0 && (
+                      <div className="mt-3 grid grid-cols-3 sm:grid-cols-4 gap-2">
+                        {photos.map((photo, idx) => (
+                          <div
+                            key={photo.id}
+                            className="relative group aspect-square rounded-lg overflow-hidden border border-slate-200 bg-slate-100"
+                          >
+                            <img
+                              src={photo.dataUrl}
+                              alt={photo.name}
+                              className="w-full h-full object-cover"
+                            />
+
+                            {idx === 0 && (
+                              <span className="absolute top-1 left-1 bg-violet-700/90 text-white text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded">
+                                Cover
+                              </span>
+                            )}
+
+                            <button
+                              type="button"
+                              title="Remove photo"
+                              aria-label={`Remove ${photo.name}`}
+                              onClick={() => removePhoto(photo.id)}
+                              className="absolute top-1 right-1 w-5 h-5 grid place-items-center rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 hover:bg-rose-600 transition"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+
+                            {idx !== 0 && (
+                              <button
+                                type="button"
+                                title="Set as cover photo"
+                                aria-label={`Set ${photo.name} as cover`}
+                                onClick={() => makeCover(photo.id)}
+                                className="absolute bottom-1 right-1 w-5 h-5 grid place-items-center rounded-full bg-white/85 text-violet-700 opacity-0 group-hover:opacity-100 hover:bg-white transition"
+                              >
+                                <Star className="w-3 h-3" />
+                              </button>
+                            )}
+
+                            <span className="absolute bottom-1 left-1 text-[9px] font-medium bg-black/55 text-white px-1.5 py-0.5 rounded backdrop-blur-sm">
+                              {formatBytes(photo.bytes)}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <p className="mt-1.5 text-[10px] text-slate-400 flex items-center gap-1">
+                      <Images className="w-3 h-3 shrink-0" />
+                      {photos.length === 0
+                        ? "Optional but recommended — listings with real photos receive more enquiries."
+                        : "Tap the star on a photo to make it the cover. The first photo is shown on search cards."}
+                    </p>
                   </div>
 
                   <DialogFooter className="pt-2">

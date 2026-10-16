@@ -169,6 +169,17 @@ type PropertiesContextType = {
 
 const PropertiesContext = createContext<PropertiesContextType | undefined>(undefined);
 
+/** Write the property snapshot to localStorage; false when the quota is hit. */
+function persistProperties(list: Property[]): boolean {
+  try {
+    localStorage.setItem("rentright_properties", JSON.stringify(list));
+    return true;
+  } catch (e) {
+    console.warn("localStorage write failed (quota):", e);
+    return false;
+  }
+}
+
 export const PropertiesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [properties, setProperties] = useState<Property[]>(() => {
     const saved = localStorage.getItem("rentright_properties");
@@ -284,7 +295,22 @@ export const PropertiesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   // Sync to local storage
   useEffect(() => {
-    localStorage.setItem("rentright_properties", JSON.stringify(properties));
+    if (persistProperties(properties)) return;
+
+    // Owner-uploaded photos are data URLs and can exceed the localStorage
+    // quota. Fall back to a metadata-only snapshot so the listings
+    // themselves still survive a reload (photos stay for this session).
+    const slim = properties.map((p) => ({
+      ...p,
+      images: p.images.filter((src) => !src.startsWith("data:"))
+    }));
+    if (persistProperties(slim)) {
+      toast.error(
+        "Browser storage is full — uploaded photos were not saved for next visit. Please upload fewer or smaller photos."
+      );
+    } else {
+      console.error("Failed to persist properties to localStorage");
+    }
   }, [properties]);
 
   useEffect(() => {
