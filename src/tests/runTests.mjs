@@ -10,7 +10,7 @@ const jsonPath = path.resolve(__dirname, "../data/properties.json");
 const initialProperties = JSON.parse(fs.readFileSync(jsonPath, "utf-8"));
 
 console.log("=========================================");
-console.log("🧪 RentRight Automated HackVision Test Suite");
+console.log("🧪 RentRight Automated Test Suite");
 console.log("=========================================\n");
 
 let passed = 0;
@@ -29,7 +29,7 @@ function test(name, fn) {
 }
 
 // TEST 1: Property Schema Validation
-test("1. Properties schema contains HackVision rental fields (Rent, Deposit, Type, Occupancy)", () => {
+test("1. Properties schema contains required rental fields (Rent, Deposit, Type, Occupancy)", () => {
   assert(initialProperties.length > 0, "Properties list should not be empty");
   for (const p of initialProperties) {
     assert(typeof p.id === "number", `Property ${p.id} must have numeric id`);

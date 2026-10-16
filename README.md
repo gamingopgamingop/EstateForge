@@ -84,7 +84,7 @@ Replaced generic "Sale Price" with transparent rental fields:
 
 ---
 
-## 🚀 4 HackVision Innovations Implemented
+## 🚀 4 Key Platform Innovations Implemented
 
 | Innovation | Route | Description |
 |---|---|---|

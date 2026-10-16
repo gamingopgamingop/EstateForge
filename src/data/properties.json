@@ -62,7 +62,12 @@
     "propertyType": "PG",
     "status": "Available",
     "yearBuilt": 2022,
-    "tags": ["Verified", "Food Included", "WiFi", "AC"]
+    "tags": [
+      "Verified",
+      "Food Included",
+      "WiFi",
+      "AC"
+    ]
   },
   {
     "id": 2,
@@ -127,7 +132,12 @@
     "propertyType": "Shared Flat",
     "status": "Available",
     "yearBuilt": 2021,
-    "tags": ["Verified", "Attached Washroom", "Balcony", "Pro Vibe"]
+    "tags": [
+      "Verified",
+      "Attached Washroom",
+      "Balcony",
+      "Pro Vibe"
+    ]
   },
   {
     "id": 3,
@@ -190,7 +200,12 @@
     "propertyType": "Hostel",
     "status": "Available",
     "yearBuilt": 2020,
-    "tags": ["Verified", "Budget Student", "Metro 200m", "Food Included"]
+    "tags": [
+      "Verified",
+      "Budget Student",
+      "Metro 200m",
+      "Food Included"
+    ]
   },
   {
     "id": 4,
@@ -214,7 +229,7 @@
     "address": "84, 12th Cross, Behind Metro Pillar 88, Indiranagar",
     "landmark": "Behind Toit Brewpub, Indiranagar",
     "metroDistanceKm": 0.4,
-    "collegeDistanceKm": 2.0,
+    "collegeDistanceKm": 2,
     "bedrooms": 1,
     "bathrooms": 1,
     "area": 280,
@@ -250,7 +265,12 @@
     "propertyType": "Room",
     "status": "Available",
     "yearBuilt": 2018,
-    "tags": ["Owner Claimed", "No Brokerage", "Prime Metro", "Studio"]
+    "tags": [
+      "Owner Claimed",
+      "No Brokerage",
+      "Prime Metro",
+      "Studio"
+    ]
   },
   {
     "id": 5,
@@ -274,7 +294,7 @@
     "address": "B-504, Prestige Shantiniketan, Whitefield Main Rd",
     "landmark": "Opposite ITPL Main Gate",
     "metroDistanceKm": 0.6,
-    "collegeDistanceKm": 4.0,
+    "collegeDistanceKm": 4,
     "bedrooms": 1,
     "bathrooms": 1,
     "area": 620,
@@ -313,7 +333,12 @@
     "propertyType": "Entire Apartment",
     "status": "Available",
     "yearBuilt": 2023,
-    "tags": ["Verified", "Gated Society", "Gym & Pool", "Luxury"]
+    "tags": [
+      "Verified",
+      "Gated Society",
+      "Gym & Pool",
+      "Luxury"
+    ]
   },
   {
     "id": 6,
@@ -374,7 +399,12 @@
     "propertyType": "PG",
     "status": "Rented",
     "yearBuilt": 2021,
-    "tags": ["Verified", "Women Only", "Food Included", "Safe"]
+    "tags": [
+      "Verified",
+      "Women Only",
+      "Food Included",
+      "Safe"
+    ]
   },
   {
     "id": 7,
@@ -436,7 +466,12 @@
     "propertyType": "Room",
     "status": "Available",
     "yearBuilt": 2024,
-    "tags": ["Verified", "Coliving", "High-Speed WiFi", "Gym"]
+    "tags": [
+      "Verified",
+      "Coliving",
+      "High-Speed WiFi",
+      "Gym"
+    ]
   },
   {
     "id": 8,
@@ -495,7 +530,12 @@
     "propertyType": "Shared Flat",
     "status": "Available",
     "yearBuilt": 2019,
-    "tags": ["Owner Claimed", "Student Budget", "South Campus", "Metro Near"]
+    "tags": [
+      "Owner Claimed",
+      "Student Budget",
+      "South Campus",
+      "Metro Near"
+    ]
   },
   {
     "id": 9,
@@ -518,7 +558,7 @@
     "state": "Maharashtra",
     "address": "Row House 14, Clover Park, Viman Nagar",
     "landmark": "Near Phoenix Marketcity & Symbiosis Campus",
-    "metroDistanceKm": 1.0,
+    "metroDistanceKm": 1,
     "collegeDistanceKm": 0.4,
     "bedrooms": 1,
     "bathrooms": 1,
@@ -556,7 +596,12 @@
     "propertyType": "PG",
     "status": "Available",
     "yearBuilt": 2022,
-    "tags": ["Verified", "Symbiosis Walkable", "Food Included", "Student Friendly"]
+    "tags": [
+      "Verified",
+      "Symbiosis Walkable",
+      "Food Included",
+      "Student Friendly"
+    ]
   },
   {
     "id": 10,
@@ -580,7 +625,7 @@
     "address": "Flat 804, Blue Ridge Township, Hinjewadi Phase 1",
     "landmark": "Near Infosys & Wipro Circles",
     "metroDistanceKm": 2.5,
-    "collegeDistanceKm": 3.0,
+    "collegeDistanceKm": 3,
     "bedrooms": 1,
     "bathrooms": 1,
     "area": 300,
@@ -617,7 +662,12 @@
     "propertyType": "Shared Flat",
     "status": "Available",
     "yearBuilt": 2021,
-    "tags": ["Verified", "Blue Ridge", "IT Park 3 Mins", "Gym Access"]
+    "tags": [
+      "Verified",
+      "Blue Ridge",
+      "IT Park 3 Mins",
+      "Gym Access"
+    ]
   },
   {
     "id": 11,
@@ -640,8 +690,8 @@
     "state": "Telangana",
     "address": "Tower 4, My Home Bhooja, Gachibowli",
     "landmark": "Near Microsoft & Amazon Campus, Financial District",
-    "metroDistanceKm": 3.0,
-    "collegeDistanceKm": 2.0,
+    "metroDistanceKm": 3,
+    "collegeDistanceKm": 2,
     "bedrooms": 1,
     "bathrooms": 1,
     "area": 380,
@@ -678,7 +728,12 @@
     "propertyType": "Room",
     "status": "Available",
     "yearBuilt": 2023,
-    "tags": ["Verified", "Financial District", "Rooftop Pool", "Luxury Studio"]
+    "tags": [
+      "Verified",
+      "Financial District",
+      "Rooftop Pool",
+      "Luxury Studio"
+    ]
   },
   {
     "id": 12,
@@ -739,7 +794,12 @@
     "propertyType": "PG",
     "status": "Available",
     "yearBuilt": 2022,
-    "tags": ["Verified", "Metro 500m", "Food Included", "Hitec City"]
+    "tags": [
+      "Verified",
+      "Metro 500m",
+      "Food Included",
+      "Hitec City"
+    ]
   },
   {
     "id": 13,
@@ -800,7 +860,12 @@
     "propertyType": "Entire Apartment",
     "status": "Available",
     "yearBuilt": 2021,
-    "tags": ["Verified", "Powai Hiranandani", "IIT Bombay Walkable", "Lake View"]
+    "tags": [
+      "Verified",
+      "Powai Hiranandani",
+      "IIT Bombay Walkable",
+      "Lake View"
+    ]
   },
   {
     "id": 14,
@@ -860,7 +925,12 @@
     "propertyType": "Hostel",
     "status": "Available",
     "yearBuilt": 2020,
-    "tags": ["Owner Claimed", "Neeladri Road", "Food Included", "Budget Tech"]
+    "tags": [
+      "Owner Claimed",
+      "Neeladri Road",
+      "Food Included",
+      "Budget Tech"
+    ]
   },
   {
     "id": 15,
@@ -884,7 +954,7 @@
     "address": "K-Block, DLF Phase 2, Gurugram",
     "landmark": "Near Sikanderpur Metro Station & Cyber Hub",
     "metroDistanceKm": 0.4,
-    "collegeDistanceKm": 3.0,
+    "collegeDistanceKm": 3,
     "bedrooms": 1,
     "bathrooms": 1,
     "area": 320,
@@ -921,7 +991,12 @@
     "propertyType": "Room",
     "status": "Available",
     "yearBuilt": 2022,
-    "tags": ["Verified", "Cyber City Walkable", "Metro 400m", "Executive Studio"]
+    "tags": [
+      "Verified",
+      "Cyber City Walkable",
+      "Metro 400m",
+      "Executive Studio"
+    ]
   },
   {
     "id": 16,
@@ -982,7 +1057,12 @@
     "propertyType": "PG",
     "status": "Available",
     "yearBuilt": 2021,
-    "tags": ["Verified", "JIIT Near", "Food Included", "Noida Sector 62"]
+    "tags": [
+      "Verified",
+      "JIIT Near",
+      "Food Included",
+      "Noida Sector 62"
+    ]
   },
   {
     "id": 17,
@@ -1041,7 +1121,12 @@
     "propertyType": "Shared Flat",
     "status": "Available",
     "yearBuilt": 2018,
-    "tags": ["Owner Claimed", "MIT Pune Walkable", "Super Budget", "Student PG"]
+    "tags": [
+      "Owner Claimed",
+      "MIT Pune Walkable",
+      "Super Budget",
+      "Student PG"
+    ]
   },
   {
     "id": 18,
@@ -1102,6 +1187,933 @@
     "propertyType": "Shared Flat",
     "status": "Available",
     "yearBuilt": 2022,
-    "tags": ["Verified", "EcoSpace Near", "ORR Corridor", "Workstation Ready"]
+    "tags": [
+      "Verified",
+      "EcoSpace Near",
+      "ORR Corridor",
+      "Workstation Ready"
+    ]
+  },
+  {
+    "id": 19,
+    "title": "Indiranagar Boutique Studio Suite - Walk to 100ft Road Metro",
+    "monthlyRent": 19500,
+    "securityDeposit": 39000,
+    "maintenance": 1200,
+    "billsIncluded": false,
+    "accommodationType": "Room",
+    "occupancyPreference": "Single",
+    "furnishing": "Fully Furnished",
+    "targetAudience": "Working Professionals",
+    "availableFrom": "2026-10-28",
+    "listingStatus": "Available",
+    "verificationStatus": "Verified",
+    "listedDate": "2026-10-10",
+    "expiryDays": 45,
+    "locality": "Indiranagar",
+    "city": "Bengaluru",
+    "state": "Karnataka",
+    "address": "Plot 88, 12th Main Road, Indiranagar",
+    "landmark": "300m from Indiranagar Metro Station (Purple Line)",
+    "metroDistanceKm": 0.3,
+    "collegeDistanceKm": 4,
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "area": 360,
+    "amenities": [
+      "High-Speed WiFi (300 Mbps)",
+      "AC with Climate Control",
+      "Attached Modern Bathroom",
+      "Private Balcony with Sitout",
+      "Mini Fridge & Microwave",
+      "Smart TV with OTT",
+      "Power Backup (24/7)",
+      "Daily Housekeeping",
+      "Biometric Access"
+    ],
+    "houseRules": [
+      "Quiet hours after 11:00 PM",
+      "Non-smoking inside room",
+      "Visitors allowed during daytime hours"
+    ],
+    "ownerId": 101,
+    "ownerName": "Vikram Rao (Architect)",
+    "ownerResponseTime": "Replies in 30 mins",
+    "viewsCount": 720,
+    "enquiriesCount": 34,
+    "rating": 4.95,
+    "featured": true,
+    "images": [
+      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1502005229762-ae1b46642009?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "description": "High-end boutique studio suite situated in prime Indiranagar. Walking distance to popular cafes, work hubs, and purple line metro. Includes ergonomic Herman Miller chair and oak work desk.",
+    "price": 19500,
+    "pricePerMonth": 19500,
+    "type": "Room",
+    "propertyType": "Room",
+    "status": "Available",
+    "yearBuilt": 2023,
+    "tags": [
+      "Verified",
+      "Indiranagar",
+      "Metro Proximity",
+      "Boutique Living",
+      "Workstation"
+    ]
+  },
+  {
+    "id": 20,
+    "title": "BTM Layout Student Hub PG near Christ University",
+    "monthlyRent": 8000,
+    "securityDeposit": 16000,
+    "maintenance": 0,
+    "billsIncluded": true,
+    "accommodationType": "PG",
+    "occupancyPreference": "Double",
+    "furnishing": "Fully Furnished",
+    "targetAudience": "Students",
+    "availableFrom": "2026-10-25",
+    "listingStatus": "Available",
+    "verificationStatus": "Verified",
+    "listedDate": "2026-10-09",
+    "expiryDays": 50,
+    "locality": "BTM Layout 2nd Stage",
+    "city": "Bengaluru",
+    "state": "Karnataka",
+    "address": "Cross 7, Ring Road, BTM 2nd Stage",
+    "landmark": "Near Silk Board Junction & Christ University",
+    "metroDistanceKm": 1.1,
+    "collegeDistanceKm": 0.9,
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "area": 220,
+    "amenities": [
+      "3 Times Homely Meals",
+      "Unlimited WiFi (100 Mbps)",
+      "RO Filtered Water",
+      "Washing Machine Access",
+      "Individual Wardrobe & Locker",
+      "Twin Study Desks",
+      "CCTV Surveillance",
+      "24/7 Hot Water (Solar)"
+    ],
+    "houseRules": [
+      "Curfew 10:30 PM",
+      "Student ID card required at registration",
+      "No loud music during exam periods"
+    ],
+    "ownerId": 102,
+    "ownerName": "Saraswathi PG Caretaker",
+    "ownerResponseTime": "Replies in 2 hours",
+    "viewsCount": 640,
+    "enquiriesCount": 29,
+    "rating": 4.6,
+    "featured": false,
+    "images": [
+      "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "description": "Comfortable student accommodation in BTM Layout. Walking distance to coaching institutes, Christ University, and direct bus connectivity across South Bengaluru. Wholesome vegetarian and non-vegetarian food served.",
+    "price": 8000,
+    "pricePerMonth": 8000,
+    "type": "PG",
+    "propertyType": "PG",
+    "status": "Available",
+    "yearBuilt": 2021,
+    "tags": [
+      "Verified",
+      "Student Friendly",
+      "Food Included",
+      "Christ Univ Near"
+    ]
+  },
+  {
+    "id": 21,
+    "title": "Marathahalli Tech Corridor 2BHK Shared Flat",
+    "monthlyRent": 11500,
+    "securityDeposit": 23000,
+    "maintenance": 800,
+    "billsIncluded": false,
+    "accommodationType": "Shared Flat",
+    "occupancyPreference": "Double",
+    "furnishing": "Semi-Furnished",
+    "targetAudience": "Both",
+    "availableFrom": "2026-11-01",
+    "listingStatus": "Available",
+    "verificationStatus": "Owner Claimed",
+    "listedDate": "2026-10-12",
+    "expiryDays": 60,
+    "locality": "Marathahalli",
+    "city": "Bengaluru",
+    "state": "Karnataka",
+    "address": "Tower 3, Alpine Eco Appts, Marathahalli",
+    "landmark": "Near Kalamandir & Marathahalli Bridge",
+    "metroDistanceKm": 1.8,
+    "collegeDistanceKm": 3,
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "area": 280,
+    "amenities": [
+      "Swimming Pool & Gym",
+      "High-Speed WiFi",
+      "Cook & Maid Setup",
+      "Gas Pipeline & Modular Kitchen",
+      "Power Backup (Gated Society)",
+      "Covered Two-Wheeler Parking",
+      "Clubhouse & Badminton Court"
+    ],
+    "houseRules": [
+      "Share electricity & domestic maid equally",
+      "Maintain cleanliness in common living room",
+      "Advance 1-month notice before leaving"
+    ],
+    "ownerId": 103,
+    "ownerName": "Aditya Sen (SDE II)",
+    "ownerResponseTime": "Replies in 1 hour",
+    "viewsCount": 410,
+    "enquiriesCount": 17,
+    "rating": 4.5,
+    "featured": false,
+    "images": [
+      "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "description": "One shared double bedroom available in a 2BHK gated society in Marathahalli. Ideal for tech professionals working in Cessna, Prestige Tech Park, or RMZ Ecoworld. Friendly flatmates with organized cooking setup.",
+    "price": 11500,
+    "pricePerMonth": 11500,
+    "type": "Shared Flat",
+    "propertyType": "Shared Flat",
+    "status": "Available",
+    "yearBuilt": 2020,
+    "tags": [
+      "Owner Claimed",
+      "Gated Society",
+      "Tech Corridor",
+      "Pool & Gym"
+    ]
+  },
+  {
+    "id": 22,
+    "title": "Viman Nagar Student Residence near Symbiosis Pune",
+    "monthlyRent": 12000,
+    "securityDeposit": 24000,
+    "maintenance": 0,
+    "billsIncluded": true,
+    "accommodationType": "Hostel",
+    "occupancyPreference": "Double",
+    "furnishing": "Fully Furnished",
+    "targetAudience": "Students",
+    "availableFrom": "2026-10-26",
+    "listingStatus": "Available",
+    "verificationStatus": "Verified",
+    "listedDate": "2026-10-11",
+    "expiryDays": 45,
+    "locality": "Viman Nagar",
+    "city": "Pune",
+    "state": "Maharashtra",
+    "address": "Row House 14, Clover Park, Viman Nagar",
+    "landmark": "400m from Symbiosis International University Campus",
+    "metroDistanceKm": 2,
+    "collegeDistanceKm": 0.4,
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "area": 260,
+    "amenities": [
+      "Breakfast, Lunch & Dinner Included",
+      "Superfast WiFi (200 Mbps)",
+      "Study Desks with LED Lamps",
+      "Quiet Library Reading Room",
+      "Laundry Service (2x per week)",
+      "Biometric Security Check",
+      "Cafeteria & Lounge"
+    ],
+    "houseRules": [
+      "Hostel gate closes at 10:30 PM",
+      "Valid College ID required",
+      "Quiet library hours observed 8 PM to 6 AM"
+    ],
+    "ownerId": 104,
+    "ownerName": "Mrs. Sunita Deshmukh",
+    "ownerResponseTime": "Replies in 15 mins",
+    "viewsCount": 890,
+    "enquiriesCount": 46,
+    "rating": 4.88,
+    "featured": true,
+    "images": [
+      "https://images.unsplash.com/photo-1540518614846-7ede433c4ef3?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "description": "Premier student hostel located 5 minutes walking distance to Symbiosis Viman Nagar campus. Features hygienic, home-style 3 meals daily, active study rooms, high-speed fiber, and 24/7 security.",
+    "price": 12000,
+    "pricePerMonth": 12000,
+    "type": "Hostel",
+    "propertyType": "Hostel",
+    "status": "Available",
+    "yearBuilt": 2022,
+    "tags": [
+      "Verified",
+      "Symbiosis Pune",
+      "Meals Included",
+      "Student Residence"
+    ]
+  },
+  {
+    "id": 23,
+    "title": "Baner High-Rise 1BHK Studio - Balewadi High Street",
+    "monthlyRent": 18500,
+    "securityDeposit": 37000,
+    "maintenance": 1200,
+    "billsIncluded": false,
+    "accommodationType": "Entire Apartment",
+    "occupancyPreference": "Single",
+    "furnishing": "Fully Furnished",
+    "targetAudience": "Working Professionals",
+    "availableFrom": "2026-11-01",
+    "listingStatus": "Available",
+    "verificationStatus": "Verified",
+    "listedDate": "2026-10-10",
+    "expiryDays": 45,
+    "locality": "Baner",
+    "city": "Pune",
+    "state": "Maharashtra",
+    "address": "Flat 902, Skyi Songbirds, Baner-Pashan Link Rd",
+    "landmark": "Near Balewadi High Street & Cummins India",
+    "metroDistanceKm": 1.5,
+    "collegeDistanceKm": 4.2,
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "area": 540,
+    "amenities": [
+      "Modular Kitchen with Chimney & Piped Gas",
+      "Inverter Power Backup",
+      "Dedicated Car & Bike Parking",
+      "Gym & Rooftop Lounge",
+      "Split AC in Bedroom",
+      "Washing Machine & Water Purifier",
+      "Intercom & Video Door Phone"
+    ],
+    "houseRules": [
+      "Families and working professionals welcome",
+      "Zero brokerage listing",
+      "11 months agreement with 1 month notice"
+    ],
+    "ownerId": 105,
+    "ownerName": "Rajesh Kulkarni",
+    "ownerResponseTime": "Replies in 1 hour",
+    "viewsCount": 520,
+    "enquiriesCount": 22,
+    "rating": 4.8,
+    "featured": false,
+    "images": [
+      "https://images.unsplash.com/photo-1502672023488-70e25813eb80?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "description": "Stylishly designed 1BHK flat in prime Baner. Features east-facing balcony with scenic hills view, modular kitchen, and modern furniture. Walking distance to top restaurants, supermarkets, and cafes.",
+    "price": 18500,
+    "pricePerMonth": 18500,
+    "type": "Entire Apartment",
+    "propertyType": "Entire Apartment",
+    "status": "Available",
+    "yearBuilt": 2021,
+    "tags": [
+      "Verified",
+      "Baner High Street",
+      "Entire Flat",
+      "Scenic Balcony"
+    ]
+  },
+  {
+    "id": 24,
+    "title": "Wakad Co-living PG - AC Twin Sharing with High Speed WiFi",
+    "monthlyRent": 9000,
+    "securityDeposit": 18000,
+    "maintenance": 0,
+    "billsIncluded": true,
+    "accommodationType": "PG",
+    "occupancyPreference": "Double",
+    "furnishing": "Fully Furnished",
+    "targetAudience": "Both",
+    "availableFrom": "2026-10-25",
+    "listingStatus": "Available",
+    "verificationStatus": "Verified",
+    "listedDate": "2026-10-13",
+    "expiryDays": 60,
+    "locality": "Wakad",
+    "city": "Pune",
+    "state": "Maharashtra",
+    "address": "Building 4, Datta Mandir Road, Wakad",
+    "landmark": "Near Mumbai-Pune Expressway & Bhumkar Chowk",
+    "metroDistanceKm": 2.5,
+    "collegeDistanceKm": 2,
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "area": 240,
+    "amenities": [
+      "AC in Room",
+      "All 3 Meals Included",
+      "200 Mbps Fiber WiFi",
+      "Attached Washroom with Geyser",
+      "Twin Beds with Spring Mattresses",
+      "Daily Housekeeping Service",
+      "Refrigerator in Common Area",
+      "Biometric Lock"
+    ],
+    "houseRules": [
+      "No smoking inside rooms",
+      "Guests allowed in ground floor visitor lounge",
+      "Gate closes at 11:00 PM"
+    ],
+    "ownerId": 106,
+    "ownerName": "Anand Shinde",
+    "ownerResponseTime": "Replies in 45 mins",
+    "viewsCount": 380,
+    "enquiriesCount": 19,
+    "rating": 4.65,
+    "featured": false,
+    "images": [
+      "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1560185007-cde436f6a4d0?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "description": "Ideal for tech employees working in Hinjewadi and students studying in Wakad/Tathawade. Fresh meals prepared on site, fast internet, and quiet study friendly environment.",
+    "price": 9000,
+    "pricePerMonth": 9000,
+    "type": "PG",
+    "propertyType": "PG",
+    "status": "Available",
+    "yearBuilt": 2023,
+    "tags": [
+      "Verified",
+      "Wakad",
+      "AC PG",
+      "Food Included"
+    ]
+  },
+  {
+    "id": 25,
+    "title": "Kondapur Tech Corridor 1BHK Serviced Apartment near Google",
+    "monthlyRent": 21000,
+    "securityDeposit": 42000,
+    "maintenance": 1500,
+    "billsIncluded": false,
+    "accommodationType": "Entire Apartment",
+    "occupancyPreference": "Single",
+    "furnishing": "Fully Furnished",
+    "targetAudience": "Working Professionals",
+    "availableFrom": "2026-11-01",
+    "listingStatus": "Available",
+    "verificationStatus": "Verified",
+    "listedDate": "2026-10-12",
+    "expiryDays": 45,
+    "locality": "Kondapur",
+    "city": "Hyderabad",
+    "state": "Telangana",
+    "address": "Flat 304, Silicon Towers, Raghavendra Colony, Kondapur",
+    "landmark": "10 mins to Google, Sarath City Capital Mall",
+    "metroDistanceKm": 1.6,
+    "collegeDistanceKm": 5,
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "area": 580,
+    "amenities": [
+      "55 inch Smart 4K TV",
+      "King Size Bed & Orthopedic Mattress",
+      "Modular Kitchen with Gas & Utensils",
+      "Washing Machine & Microwave",
+      "Dedicated Covered Car Parking",
+      "High Speed 300 Mbps Internet",
+      "Power Backup 24/7"
+    ],
+    "houseRules": [
+      "No loud parties",
+      "Direct owner agreement without brokerage",
+      "Pet friendly upon prior request"
+    ],
+    "ownerId": 107,
+    "ownerName": "Kavitha Reddy",
+    "ownerResponseTime": "Replies in 20 mins",
+    "viewsCount": 690,
+    "enquiriesCount": 31,
+    "rating": 4.9,
+    "featured": true,
+    "images": [
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "description": "Luxurious 1BHK apartment in Kondapur, Hyderabad. Specially curated for software engineers and executives. 5-minute commute to Hitec City, Google, and Amazon campuses.",
+    "price": 21000,
+    "pricePerMonth": 21000,
+    "type": "Entire Apartment",
+    "propertyType": "Entire Apartment",
+    "status": "Available",
+    "yearBuilt": 2023,
+    "tags": [
+      "Verified",
+      "Kondapur",
+      "Google Near",
+      "Luxury 1BHK",
+      "High-Rise"
+    ]
+  },
+  {
+    "id": 26,
+    "title": "Hitec City Cyber Towers Shared Flat - En-suite Washroom",
+    "monthlyRent": 14500,
+    "securityDeposit": 29000,
+    "maintenance": 1000,
+    "billsIncluded": false,
+    "accommodationType": "Shared Flat",
+    "occupancyPreference": "Single",
+    "furnishing": "Fully Furnished",
+    "targetAudience": "Working Professionals",
+    "availableFrom": "2026-10-30",
+    "listingStatus": "Available",
+    "verificationStatus": "Verified",
+    "listedDate": "2026-10-10",
+    "expiryDays": 45,
+    "locality": "Hitec City",
+    "city": "Hyderabad",
+    "state": "Telangana",
+    "address": "Tower 2, My Home Bhooja, Hitec City",
+    "landmark": "600m from Hitec City Metro Station & Cyber Towers",
+    "metroDistanceKm": 0.6,
+    "collegeDistanceKm": 3.5,
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "area": 340,
+    "amenities": [
+      "Attached Private Bathroom",
+      "AC with Dual Inverter",
+      "Access to Gated Society Clubhouse & Pool",
+      "Cook & Housekeeper Arranged",
+      "High Speed WiFi",
+      "Gated Security & Biometrics",
+      "Balcony with Skyline View"
+    ],
+    "houseRules": [
+      "Working IT professionals preferred",
+      "Equal share of electricity and maid expenses",
+      "Respectful shared living etiquette"
+    ],
+    "ownerId": 108,
+    "ownerName": "Vamsi Krishna (Tech Lead)",
+    "ownerResponseTime": "Replies in 1 hour",
+    "viewsCount": 810,
+    "enquiriesCount": 40,
+    "rating": 4.92,
+    "featured": true,
+    "images": [
+      "https://images.unsplash.com/photo-1502005035787-8ff33b6f0018?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "description": "Private master bedroom with attached bathroom and balcony in a premier gated community. 600m to Cyber Towers and Hitec City metro. Peaceful, professional flatmates.",
+    "price": 14500,
+    "pricePerMonth": 14500,
+    "type": "Shared Flat",
+    "propertyType": "Shared Flat",
+    "status": "Available",
+    "yearBuilt": 2022,
+    "tags": [
+      "Verified",
+      "Hitec City",
+      "Metro 600m",
+      "Ensuite Bath",
+      "Clubhouse"
+    ]
+  },
+  {
+    "id": 27,
+    "title": "Hauz Khas Studio Loft - 5 Mins to IIT Delhi & Metro",
+    "monthlyRent": 22000,
+    "securityDeposit": 44000,
+    "maintenance": 1000,
+    "billsIncluded": false,
+    "accommodationType": "Room",
+    "occupancyPreference": "Single",
+    "furnishing": "Fully Furnished",
+    "targetAudience": "Both",
+    "availableFrom": "2026-11-01",
+    "listingStatus": "Available",
+    "verificationStatus": "Verified",
+    "listedDate": "2026-10-11",
+    "expiryDays": 45,
+    "locality": "Hauz Khas",
+    "city": "Delhi NCR",
+    "state": "Delhi",
+    "address": "E-Block, Hauz Khas Enclave",
+    "landmark": "Near IIT Delhi & Hauz Khas Metro Station",
+    "metroDistanceKm": 0.4,
+    "collegeDistanceKm": 0.5,
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "area": 400,
+    "amenities": [
+      "Private Terrace Garden Access",
+      "Dedicated Study & Work Desk",
+      "Split AC & Room Heater",
+      "Attached Designer Washroom",
+      "Pantry with Induction & Fridge",
+      "High-Speed WiFi (300 Mbps)",
+      "24/7 Security & CCTV"
+    ],
+    "houseRules": [
+      "No smoking indoors",
+      "Visitors permitted in daytime",
+      "Non-discriminatory fair tenancy rules"
+    ],
+    "ownerId": 109,
+    "ownerName": "Dr. Harish Oberoi (Professor Retd.)",
+    "ownerResponseTime": "Replies in 20 mins",
+    "viewsCount": 750,
+    "enquiriesCount": 35,
+    "rating": 4.89,
+    "featured": true,
+    "images": [
+      "https://images.unsplash.com/photo-1536376072261-38c75010e6c9?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "description": "Architecturally designed independent studio loft in serene Hauz Khas Enclave. Walking distance to IIT Delhi campus and Yellow/Magenta Line metro junction. Perfect for researchers, scholars, and creative professionals.",
+    "price": 22000,
+    "pricePerMonth": 22000,
+    "type": "Room",
+    "propertyType": "Room",
+    "status": "Available",
+    "yearBuilt": 2021,
+    "tags": [
+      "Verified",
+      "IIT Delhi Near",
+      "Hauz Khas",
+      "Studio Loft",
+      "Metro Adjacent"
+    ]
+  },
+  {
+    "id": 28,
+    "title": "South Extension Medical Student PG - Meals & AC",
+    "monthlyRent": 11500,
+    "securityDeposit": 23000,
+    "maintenance": 0,
+    "billsIncluded": true,
+    "accommodationType": "PG",
+    "occupancyPreference": "Double",
+    "furnishing": "Fully Furnished",
+    "targetAudience": "Students",
+    "availableFrom": "2026-10-25",
+    "listingStatus": "Available",
+    "verificationStatus": "Verified",
+    "listedDate": "2026-10-09",
+    "expiryDays": 50,
+    "locality": "South Extension Part 1",
+    "city": "Delhi NCR",
+    "state": "Delhi",
+    "address": "Plot 42, Block G, South Extension 1",
+    "landmark": "Near AIIMS Delhi & South Ex Metro Station",
+    "metroDistanceKm": 0.5,
+    "collegeDistanceKm": 1.1,
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "area": 250,
+    "amenities": [
+      "Hygienic 3 Meals Daily",
+      "24/7 Power Backup (Silent DG)",
+      "Air Conditioning",
+      "Silent Study Hall on 3rd Floor",
+      "RO Purified Water Dispensers",
+      "Daily Room Cleaning & Mop",
+      "Locker Wardrobes & Desks"
+    ],
+    "houseRules": [
+      "Strict quiet study hours after 9 PM",
+      "Student ID / AIIMS aspirant ID card required",
+      "Entry biometric record maintained"
+    ],
+    "ownerId": 110,
+    "ownerName": "Rajeev Gupta (PG Director)",
+    "ownerResponseTime": "Replies in 15 mins",
+    "viewsCount": 920,
+    "enquiriesCount": 51,
+    "rating": 4.85,
+    "featured": false,
+    "images": [
+      "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "description": "Peaceful accommodation tailored for medical aspirants and students. Close to AIIMS, Safdarjung Hospital, and South Ex Market. Delicious north Indian home-style meals included.",
+    "price": 11500,
+    "pricePerMonth": 11500,
+    "type": "PG",
+    "propertyType": "PG",
+    "status": "Available",
+    "yearBuilt": 2022,
+    "tags": [
+      "Verified",
+      "AIIMS Near",
+      "South Ex",
+      "Food Included",
+      "Medical Students"
+    ]
+  },
+  {
+    "id": 29,
+    "title": "Dwarka Sector 12 Metro-Adjacent 1BHK Flat",
+    "monthlyRent": 13000,
+    "securityDeposit": 26000,
+    "maintenance": 700,
+    "billsIncluded": false,
+    "accommodationType": "Entire Apartment",
+    "occupancyPreference": "Single",
+    "furnishing": "Semi-Furnished",
+    "targetAudience": "Both",
+    "availableFrom": "2026-11-05",
+    "listingStatus": "Available",
+    "verificationStatus": "Owner Claimed",
+    "listedDate": "2026-10-13",
+    "expiryDays": 60,
+    "locality": "Dwarka Sector 12",
+    "city": "Delhi NCR",
+    "state": "Delhi",
+    "address": "Pocket 3, DDA SFS Flats, Sector 12 Dwarka",
+    "landmark": "200m from Dwarka Sector 12 Metro (Blue Line)",
+    "metroDistanceKm": 0.2,
+    "collegeDistanceKm": 1.8,
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "area": 480,
+    "amenities": [
+      "Direct Blue Line Metro Access",
+      "Modular Kitchen Setup",
+      "24/7 DDA Water Supply",
+      "Ample Open Parking",
+      "Balcony overlooking DDA Park",
+      "Gated Pocket Security",
+      "Nearby City Center Mall"
+    ],
+    "houseRules": [
+      "Direct owner tenancy, no broker fees",
+      "Standard 11 month rental contract",
+      "Cooperative resident community"
+    ],
+    "ownerId": 111,
+    "ownerName": "Anita Mathur",
+    "ownerResponseTime": "Replies in 2 hours",
+    "viewsCount": 390,
+    "enquiriesCount": 14,
+    "rating": 4.5,
+    "featured": false,
+    "images": [
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "description": "Bright and airy 1BHK flat in DDA Sector 12 Dwarka. Just 2 minutes walk to the Blue Line metro. Affordable rent with green park views and great road connectivity to IGI airport.",
+    "price": 13000,
+    "pricePerMonth": 13000,
+    "type": "Entire Apartment",
+    "propertyType": "Entire Apartment",
+    "status": "Available",
+    "yearBuilt": 2019,
+    "tags": [
+      "Owner Claimed",
+      "Dwarka Blue Line",
+      "Metro 200m",
+      "Affordable 1BHK"
+    ]
+  },
+  {
+    "id": 30,
+    "title": "Andheri East Metro Hub Shared Flat - Near SEEPZ & Airport",
+    "monthlyRent": 16500,
+    "securityDeposit": 33000,
+    "maintenance": 1200,
+    "billsIncluded": false,
+    "accommodationType": "Shared Flat",
+    "occupancyPreference": "Single",
+    "furnishing": "Fully Furnished",
+    "targetAudience": "Working Professionals",
+    "availableFrom": "2026-10-27",
+    "listingStatus": "Available",
+    "verificationStatus": "Verified",
+    "listedDate": "2026-10-10",
+    "expiryDays": 45,
+    "locality": "Andheri East",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "address": "B-602, Kanakia Spaces, Chakala, Andheri East",
+    "landmark": "300m from Chakala (J.B. Nagar) Metro Station",
+    "metroDistanceKm": 0.3,
+    "collegeDistanceKm": 4.5,
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "area": 320,
+    "amenities": [
+      "AC & Smart TV in Room",
+      "Attached Private Bath",
+      "Modular Kitchen with Cook Setup",
+      "High Speed 300 Mbps Fiber",
+      "Full Gated Society Security",
+      "Gym & Club Access",
+      "Washing Machine & Microwave"
+    ],
+    "houseRules": [
+      "Corporate professionals preferred",
+      "Equal split of utility and maid bills",
+      "Quiet and clean environment"
+    ],
+    "ownerId": 112,
+    "ownerName": "Siddharth Merchant (Finance Analyst)",
+    "ownerResponseTime": "Replies in 40 mins",
+    "viewsCount": 680,
+    "enquiriesCount": 32,
+    "rating": 4.88,
+    "featured": true,
+    "images": [
+      "https://images.unsplash.com/photo-1502672023488-70e25813eb80?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "description": "Private AC master room in a modern 3BHK flat in Chakala, Andheri East. 3 minutes walk to metro station, 10 minutes to SEEPZ and MIDC. Premium gated society with pool and gym.",
+    "price": 16500,
+    "pricePerMonth": 16500,
+    "type": "Shared Flat",
+    "propertyType": "Shared Flat",
+    "status": "Available",
+    "yearBuilt": 2022,
+    "tags": [
+      "Verified",
+      "Andheri East",
+      "Metro 300m",
+      "SEEPZ Near",
+      "Master Room"
+    ]
+  },
+  {
+    "id": 31,
+    "title": "Bandra West Sea Breeze Studio - Walk to Bandra Station & Cafes",
+    "monthlyRent": 26000,
+    "securityDeposit": 52000,
+    "maintenance": 1500,
+    "billsIncluded": false,
+    "accommodationType": "Room",
+    "occupancyPreference": "Single",
+    "furnishing": "Fully Furnished",
+    "targetAudience": "Both",
+    "availableFrom": "2026-11-01",
+    "listingStatus": "Available",
+    "verificationStatus": "Verified",
+    "listedDate": "2026-10-11",
+    "expiryDays": 45,
+    "locality": "Bandra West",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "address": "Hill Road, Near Mehboob Studio, Bandra West",
+    "landmark": "Near Carter Road & Bandra Railway Station",
+    "metroDistanceKm": 1,
+    "collegeDistanceKm": 1.2,
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "area": 380,
+    "amenities": [
+      "Designer Bohemian Interiors",
+      "Split Inverter AC",
+      "Attached Luxury Bathroom",
+      "Mini Kitchenette with Microwave & Induction",
+      "High Speed 300 Mbps Internet",
+      "Security Camera & Video Intercom",
+      "Walking Distance to Cafes"
+    ],
+    "houseRules": [
+      "Non-smoking inside the room",
+      "Zero discrimination tenancy",
+      "11 months agreement with 1 month notice"
+    ],
+    "ownerId": 113,
+    "ownerName": "Farhan Qureshi (Media Consultant)",
+    "ownerResponseTime": "Replies in 25 mins",
+    "viewsCount": 1050,
+    "enquiriesCount": 54,
+    "rating": 4.96,
+    "featured": true,
+    "images": [
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "description": "Charming independent studio suite in vibrant Bandra West. Surrounded by top cafes, cultural spots, and Carter Road promenade. Modern furniture, high-speed fiber, and serene privacy.",
+    "price": 26000,
+    "pricePerMonth": 26000,
+    "type": "Room",
+    "propertyType": "Room",
+    "status": "Available",
+    "yearBuilt": 2021,
+    "tags": [
+      "Verified",
+      "Bandra West",
+      "Sea Breeze",
+      "Boutique Studio",
+      "Vibrant Vibe"
+    ]
+  },
+  {
+    "id": 32,
+    "title": "Thane West Green Valley Co-living PG - AC & 3 Meals Included",
+    "monthlyRent": 8500,
+    "securityDeposit": 17000,
+    "maintenance": 0,
+    "billsIncluded": true,
+    "accommodationType": "PG",
+    "occupancyPreference": "Double",
+    "furnishing": "Fully Furnished",
+    "targetAudience": "Both",
+    "availableFrom": "2026-10-25",
+    "listingStatus": "Available",
+    "verificationStatus": "Verified",
+    "listedDate": "2026-10-14",
+    "expiryDays": 60,
+    "locality": "Thane West",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "address": "Sector 4, Ghodbunder Road, Thane West",
+    "landmark": "Near Viviana Mall & Hypercity",
+    "metroDistanceKm": 2.1,
+    "collegeDistanceKm": 3,
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "area": 260,
+    "amenities": [
+      "Fresh 3 Meals Daily (Home-style)",
+      "Air Conditioned Bedrooms",
+      "High Speed 150 Mbps WiFi",
+      "Daily Housekeeping & Linen Change",
+      "RO Drinking Water System",
+      "Hot Water Geysers",
+      "Biometric Digital Lock"
+    ],
+    "houseRules": [
+      "Curfew 11:00 PM",
+      "Quiet hours in study areas",
+      "Visitors allowed in ground floor cafeteria"
+    ],
+    "ownerId": 114,
+    "ownerName": "Pradeep Patil",
+    "ownerResponseTime": "Replies in 1 hour",
+    "viewsCount": 480,
+    "enquiriesCount": 22,
+    "rating": 4.7,
+    "featured": false,
+    "images": [
+      "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1540518614846-7ede433c4ef3?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "description": "Pocket-friendly and well-managed co-living PG on Ghodbunder Road. AC twin-sharing rooms with all meals, high-speed internet, and daily housekeeping included. Great bus and auto connectivity to Thane Station.",
+    "price": 8500,
+    "pricePerMonth": 8500,
+    "type": "PG",
+    "propertyType": "PG",
+    "status": "Available",
+    "yearBuilt": 2022,
+    "tags": [
+      "Verified",
+      "Thane West",
+      "Food Included",
+      "AC PG",
+      "Budget Friendly"
+    ]
   }
 ]

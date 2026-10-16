@@ -174,7 +174,18 @@ export const PropertiesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const saved = localStorage.getItem("rentright_properties");
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          // If cached data has fewer properties than the latest dataset, merge new properties
+          if (parsed.length < initialPropertiesData.length) {
+            const initialIds = new Set(initialPropertiesData.map((p) => p.id));
+            const userAdded = parsed.filter((p) => !initialIds.has(p.id));
+            const merged = [...(initialPropertiesData as Property[]), ...userAdded];
+            localStorage.setItem("rentright_properties", JSON.stringify(merged));
+            return merged;
+          }
+          return parsed;
+        }
       } catch (e) {
         console.error("Failed to parse saved properties", e);
       }
