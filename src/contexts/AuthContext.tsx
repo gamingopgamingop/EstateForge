@@ -93,10 +93,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    return !!localStorage.getItem("rentright_user") || true;
+    // Reflect the presence of a session. A stored user means we are
+    // authenticated; otherwise we fall back to the demo seeker below.
+    return !!localStorage.getItem("rentright_user");
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+
+  // A brand-new visitor is previewed as the demo seeker, so keep the
+  // auth flag consistent with the seeded user on first load.
+  useEffect(() => {
+    if (!localStorage.getItem("rentright_user") && user) {
+      setIsAuthenticated(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Sync to localStorage
   useEffect(() => {

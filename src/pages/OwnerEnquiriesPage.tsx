@@ -84,10 +84,18 @@ export const OwnerEnquiriesPage: React.FC = () => {
   const [newDescription, setNewDescription] = useState("");
 
   // Filter listings for this owner (or all if admin)
-  const ownerId = Number(user?.id) || 2;
-  const ownerListings = properties.filter(p => p.ownerId === ownerId || user?.role === "admin" || p.ownerId === 2);
-  const ownerEnquiries = enquiries.filter(e => e.ownerId === ownerId || user?.role === "admin" || e.ownerId === 2);
-  const ownerBookings = bookings.filter(b => ownerListings.some(p => p.id === b.propertyId));
+  // RBAC: owners only ever see their OWN records. The previous
+  // `|| p.ownerId === 2` fallback leaked another owner's enquiries
+  // (including tenant contacts) and bookings to any viewer.
+  const isAdmin = user?.role === "admin";
+  const ownerId = Number(user?.id);
+  const ownerListings = isAdmin
+    ? properties
+    : properties.filter((p) => Number(p.ownerId) === ownerId);
+  const ownerEnquiries = isAdmin
+    ? enquiries
+    : enquiries.filter((e) => Number(e.ownerId) === ownerId);
+  const ownerBookings = bookings.filter((b) => ownerListings.some((p) => p.id === b.propertyId));
 
   const totalViews = ownerListings.reduce((sum, p) => sum + (p.viewsCount || 0), 0);
   const activeCount = ownerListings.filter(p => p.listingStatus === "Available").length;

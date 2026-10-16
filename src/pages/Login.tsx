@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth, UserRole } from "../contexts/AuthContext";
 import HeaderSection from "../components/HeaderSection";
 import FooterSection from "../components/FooterSection";
@@ -16,6 +16,18 @@ export const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const { login, loginAsDemo, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = (location.state as any)?.from as string | undefined;
+
+  // Where to land after signing in: honor the page the user was
+  // redirected from (when allowed for the chosen role), else default.
+  const resolveDestination = (selectedRole: UserRole): string => {
+    const goingToOwnerPortal = from?.startsWith("/owner");
+    if (from && !(goingToOwnerPortal && selectedRole !== "owner" && selectedRole !== "admin")) {
+      return from;
+    }
+    return selectedRole === "owner" ? "/owner/enquiries" : "/dashboard";
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,13 +40,13 @@ export const Login: React.FC = () => {
     setTimeout(() => {
       login(email, password, role);
       setLoading(false);
-      navigate(role === "owner" ? "/owner/enquiries" : "/dashboard");
+      navigate(resolveDestination(role));
     }, 400);
   };
 
   const handleDemoLogin = (selectedRole: UserRole) => {
     loginAsDemo(selectedRole);
-    navigate(selectedRole === "owner" ? "/owner/enquiries" : "/dashboard");
+    navigate(resolveDestination(selectedRole));
   };
 
   return (
