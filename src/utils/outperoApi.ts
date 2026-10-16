@@ -1,17 +1,14 @@
 /**
- * Outpero AI voice-agent call client.
+ * Outpero AI voice-agent call client (frontend).
  *
- * SECURITY: the secret Bearer key is NOT read here and is NOT sent from the
- * browser. Requests go to the relative "/outpero-api" path, which the Vite dev
- * server proxies to https://api.outpero.com and signs server-side with
- * OUTPERO_API_KEY (see vite.config.ts). Never inline the key in frontend code.
- *
- * NOTE: the dev proxy only exists while running `npm run dev`. For a production
- * static deploy you must front this with a small serverless/edge function that
- * adds the Authorization header, or point VITE_OUTPERO_BASE at such a backend.
+ * SECURITY: this NEVER calls api.outpero.com directly and never touches the
+ * API key. Per Outpero's rule ("the API is for servers... never put an API key
+ * in a web page"), the browser only calls OUR OWN server endpoint
+ * "/api/outpero-call", which forwards to Outpero with the secret held
+ * server-side (Vite dev middleware in dev, api/outpero-call.ts function in prod).
  */
 
-const BASE = (import.meta.env.VITE_OUTPERO_BASE as string) || "/outpero-api";
+const BASE = (import.meta.env.VITE_OUTPERO_BASE as string) || "/api/outpero-call";
 const DEFAULT_EMPLOYEE_ID =
   (import.meta.env.VITE_OUTPERO_EMPLOYEE_ID as string) || "";
 
@@ -98,7 +95,7 @@ export async function placeOutperoCall(
     ),
   };
 
-  const res = await fetch(`${BASE}/v1/calls`, {
+  const res = await fetch(BASE, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
