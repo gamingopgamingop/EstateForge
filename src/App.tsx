@@ -37,6 +37,7 @@ import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
 import ChatBot from "./components/ChatBot";
 import VoiceCallAgent from "./components/VoiceCallAgent";
+import OutperoCallWidget from "./components/OutperoCallWidget";
 
 const queryClient = new QueryClient();
 
@@ -106,6 +107,8 @@ const App = () => (
             <ChatBot />
             {/* Voice Calling Agent — speaks answers from RentRight site data */}
             <VoiceCallAgent />
+            {/* Outpero AI voice agent — places real outbound phone calls */}
+            <OutperoCallWidget />
           </BrowserRouter>
         </TooltipProvider>
       </PropertiesProvider>
