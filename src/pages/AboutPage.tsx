@@ -61,7 +61,7 @@ export const AboutPage: React.FC = () => {
             <h2 className="text-xl font-bold text-slate-900">Why RentRight Exists</h2>
             <div className="space-y-3 text-xs sm:text-sm text-slate-600 leading-relaxed">
               <p>
-                Finding rental accommodation in major university and IT corridors like Bengaluru, Delhi NCR, and Pune is plagued by hidden broker fees, fake photo listings, intrusive landlord questions, and endless spam calls after registering on legacy portals.
+                Finding rental accommodation in major university and IT corridors like Bengaluru, Delhi NCR, Pune, Hyderabad, Mumbai, Chennai, and Kolkata is plagued by hidden broker fees, fake photo listings, intrusive landlord questions, and endless spam calls after registering on legacy portals.
               </p>
               <p>
                 <strong>RentRight</strong> replaces opacity with structure:
